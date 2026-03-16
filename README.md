@@ -1,10 +1,10 @@
-# Vita UI Library
+# Modified Vita UI Library
 
-A clean, performant, mobile-friendly executor UI library for Roblox.
+Clean and Sexy.
 
 ---
 
-## Installation
+## Load
 
 ```lua
 local Library = loadstring(game:HttpGet("YOUR_RAW_URL"))()
@@ -24,41 +24,27 @@ local Window = Library:Window({
     Scale             = 1.45,
     Size              = UDim2.new(0, 520, 0, 370),
     ExecIdentifyShown = true,
+    UserName          = "CustomName",
+    ExecutorName      = "MyExec",
     Theme = {
-        Accent     = "#FF007F",
-        Background = "#0D0D0D",
-        Row        = "#0F0F0F",
-        RowAlt     = "#0A0A0A",
-        Stroke     = "#191919",
-        Text       = "#FFFFFF",
-        SubText    = "#A3A3A3",
-        TabBg      = "#0A0A0A",
-        TabStroke  = "#4B0026",
-        TabImage   = "#FF007F",
-        DropBg     = "#121212",
-        DropStroke = "#1E1E1E",
-        PillBg     = "#0B0B0B",
+        Accent      = "#FF007F",
+        Background  = "#0D0D0D",
+        Row         = "#0F0F0F",
+        RowAlt      = "#0A0A0A",
+        Stroke      = "#191919",
+        Text        = "#FFFFFF",
+        SubText     = "#A3A3A3",
+        TabBg       = "#0A0A0A",
+        TabStroke   = "#4B0026",
+        TabImage    = "#FF007F",
+        DropBg      = "#121212",
+        DropStroke  = "#1E1E1E",
+        PillBg      = "#0B0B0B",
     }
 })
 ```
 
-### Window Methods
-
-| Method | Description |
-|---|---|
-| `Library:SetTheme(table)` | Update theme colors at runtime |
-| `Library:GetTheme()` | Returns current theme table |
-| `Library:SetPillIcon(icon)` | Change floating pill icon |
-| `Library:SetExecutorIdentity(bool)` | Show/hide user info block |
-| `Library:SetTimeValue(string)` | Set header time display |
-| `Library:SetWindowTitle(string)` | Change window title |
-| `Library:SetWindowSubTitle(string)` | Change window subtitle |
-| `Library:AddSizeSlider(Page)` | Add a scale slider (capped to screen) |
-| `Library:Lock()` | Disable all interactions |
-| `Library:Unlock()` | Re-enable all interactions |
-| `Library:IsLocked()` | Returns locked state |
-| `Library:Notification(Args)` | Show a toast notification |
-| `Library:Destroy()` | Destroy entire UI |
+All fields are optional. Title, SubTitle, UserName, ExecutorName can all be nil to hide them.
 
 ---
 
@@ -67,7 +53,7 @@ local Window = Library:Window({
 ```lua
 local Page = Window:NewPage({
     Title    = "Combat",
-    Desc     = "Aimbot & ESP",
+    Desc     = "Aimbot settings",
     Icon     = "sword",
     TabImage = "#FF0055"
 })
@@ -76,6 +62,8 @@ local Page = Window:NewPage({
 ---
 
 ## Elements
+
+Every element returns an object with named methods. All `Title`, `Desc`, `Icon` fields are optional.
 
 ### Section
 
@@ -87,30 +75,34 @@ Page:Section("Movement")
 
 ### Paragraph
 
-Rich info row with optional image, thumbnail, color tint, and inline buttons.
-
 ```lua
-local Para = Page:Paragraph({
+local P = Page:Paragraph({
     Title         = "Player Info",
-    Desc          = "Shows player data",
+    Desc          = "Some description",
     Color         = "#1A1A1A",
     Image         = "info",
     ImageSize     = 20,
+    ImageMode     = "beside",
     Thumbnail     = "rbxassetid://123",
     ThumbnailSize = 50,
-    Locked        = false,
     Buttons = {
-        { Icon = "bird", Title = "Fly", Callback = function() print("fly") end },
-    }
+        { Icon="bird", Title="Fly",  Callback=function() end },
+        { Icon="zap",  Title="Kick", Callback=function() end },
+    },
+    LockMessage = "Premium only"
 })
 
-Para:SetTitle("Updated Title")
-Para:SetDesc("Updated desc")
-Para:SetImage("check")
-Para:SetThumbnail("rbxassetid://456")
-Para:SetColor("#222222")
-Para:Destroy()
+P:SetTitle("New Title")
+P:SetDesc("New desc")
+P:SetImage("check")
+P:SetThumbnail("rbxassetid://456")
+P:SetColor("#222")
+P:Lock("This is locked")
+P:Unlock()
+P:Destroy()
 ```
+
+`ImageMode = "top"` places the image as a banner above the row. Use `TopImageHeight` to control its height.
 
 ---
 
@@ -120,14 +112,18 @@ Para:Destroy()
 local T = Page:Toggle({
     Title    = "Enable Speed",
     Desc     = "Walk speed hack",
+    Icon     = "zap",
     Value    = false,
-    Callback = function(v) print(v) end
+    Callback = function(v) print(v) end,
+    LockMessage = "Locked"
 })
 
-T:SetTitle("Speed Hack")
-T:SetDesc("Modified")
+T:SetTitle("Speed")
+T:SetDesc("Updated")
 T:SetValue(true)
-print(T:GetValue())
+T:GetValue()
+T:Lock("Paused")
+T:Unlock()
 T:Destroy()
 ```
 
@@ -138,15 +134,18 @@ T:Destroy()
 ```lua
 local B = Page:Button({
     Title    = "Teleport",
-    Desc     = "Jump to waypoint",
+    Desc     = "Jumps to waypoint",
     Text     = "Go",
     Icon     = "map-pin",
-    Callback = function() end
+    Callback = function() end,
+    LockMessage = "Locked"
 })
 
-B:SetTitle("New Title")
-B:SetDesc("New Desc")
+B:SetTitle("Warp")
+B:SetDesc("Updated")
 B:SetText("Execute")
+B:Lock()
+B:Unlock()
 B:Destroy()
 ```
 
@@ -158,19 +157,23 @@ B:Destroy()
 local S = Page:Slider({
     Title    = "Walk Speed",
     Desc     = "Movement speed",
+    Icon     = "activity",
     Min      = 0,
     Max      = 250,
     Rounding = 1,
     Value    = 16,
-    Suffix   = "studs/s",
-    Callback = function(v) print(v) end
+    Suffix   = "st/s",
+    Callback = function(v) print(v) end,
+    LockMessage = "Locked"
 })
 
 S:SetTitle("Speed")
 S:SetValue(100)
 S:SetMin(0)
 S:SetMax(500)
-print(S:GetValue())
+S:GetValue()
+S:Lock()
+S:Unlock()
 S:Destroy()
 ```
 
@@ -181,17 +184,31 @@ S:Destroy()
 ```lua
 local I = Page:Input({
     Title         = "Target",
-    Desc          = "Player name",
     Placeholder   = "Enter name...",
+    Icon          = "search",
     Value         = "",
     ClearOnSubmit = false,
-    Callback      = function(text) print(text) end
+    Callback      = function(text) print(text) end,
+    LockMessage   = "Locked"
 })
 
-I:SetValue("PlayerOne")
-I:SetPlaceholder("New prompt")
-print(I:GetValue())
+I:SetValue("Player1")
+I:SetPlaceholder("New hint")
+I:GetValue()
+I:Lock()
+I:Unlock()
 I:Destroy()
+```
+
+Multi-line textarea:
+
+```lua
+local TA = Page:Input({
+    Title     = "Notes",
+    MultiLine = true,
+    Lines     = 6,
+    Callback  = function(text) print(text) end
+})
 ```
 
 ---
@@ -203,33 +220,27 @@ local D = Page:Dropdown({
     Title       = "Mode",
     List        = {"Mode A", "Mode B", "Mode C"},
     Value       = "Mode A",
+    Icon        = "layers",
     Placeholder = "Select mode...",
+    Search      = true,
     Callback    = function(v) print(v) end
 })
 
 D:SetValue("Mode B")
 D:AddList("Mode D")
 D:RemoveItem("Mode A")
-D:SetList({"X", "Y", "Z"})
+D:SetList({"X","Y","Z"})
 D:SetTitle("New Title")
 D:SetPlaceholder("Pick one...")
-print(D:GetValue())
+D:GetValue()
 D:Clear()
+D:Close()
 D:Destroy()
 ```
 
 Multi-select: pass a table as `Value`.
 
-```lua
-local M = Page:Dropdown({
-    Title    = "Features",
-    List     = {"ESP", "Aimbot", "Fly"},
-    Value    = {"ESP"},
-    Callback = function(selected)
-        print(table.concat(selected, ", "))
-    end
-})
-```
+`Search = false` hides the search box.
 
 ---
 
@@ -238,14 +249,16 @@ local M = Page:Dropdown({
 ```lua
 local K = Page:Keybind({
     Title    = "Toggle ESP",
-    Desc     = "Press to activate",
+    Icon     = "keyboard",
     Value    = Enum.KeyCode.F,
-    Callback = function(key) print(key.Name) end
+    Callback = function(key) print(key.Name) end,
+    LockMessage = "Locked"
 })
 
 K:SetValue(Enum.KeyCode.G)
-K:SetTitle("ESP Key")
-print(K:GetValue().Name)
+K:GetValue()
+K:Lock()
+K:Unlock()
 K:Destroy()
 ```
 
@@ -253,17 +266,22 @@ K:Destroy()
 
 ### ColorPicker
 
+Popup with sat/val square, vertical hue bar, hex input, and RGB inputs.
+
 ```lua
 local C = Page:ColorPicker({
     Title    = "ESP Color",
-    Desc     = "Highlight color",
+    Icon     = "palette",
     Value    = Color3.fromRGB(255, 0, 127),
-    Callback = function(color) print(color) end
+    Callback = function(color) print(color) end,
+    LockMessage = "Locked"
 })
 
 C:SetValue("#00FF88")
 C:SetValue(Color3.fromRGB(0, 200, 100))
-print(C:GetValue())
+C:GetValue()
+C:Lock()
+C:Unlock()
 C:Destroy()
 ```
 
@@ -275,13 +293,12 @@ C:Destroy()
 local L = Page:RightLabel({
     Title = "Status",
     Desc  = "Current state",
+    Icon  = "info",
     Right = "Active"
 })
 
 L:SetTitle("Connection")
-L:SetDesc("Network")
 L:SetRight("Online")
-print(L.Right)
 L:Destroy()
 ```
 
@@ -292,14 +309,15 @@ L:Destroy()
 ```lua
 local B = Page:Banner("rbxassetid://12345")
 B:SetImage("https://example.com/banner.png")
+B:SetSize(UDim2.new(1,0,0,180))
 B:Destroy()
 ```
 
 ---
 
-### Config Manager
+### ConfigManager
 
-Adds a full config manager UI section with dropdown, name input, and Save/Load/Delete/Auto Load/Export buttons.
+Adds a full config manager section with a dropdown, name input, and action buttons.
 
 ```lua
 Page:ConfigManager({
@@ -311,20 +329,46 @@ Page:ConfigManager({
 })
 ```
 
+Buttons: Save (creates new, blocks duplicate names), Overwrite (updates existing), Load, Delete (with confirm dialog), Auto (sets auto-load on next run).
+
 ---
 
 ## Notifications
 
-Notifications render in their own ScreenGui with `DisplayOrder=999` so they always appear above the main UI.
+Rendered in a separate ScreenGui at DisplayOrder 999, always above the main UI.
 
 ```lua
 Library:Notification({
     Title    = "Success",
-    Desc     = "Operation completed.",
+    Desc     = "Done.",
     Duration = 3,
-    Type     = "Success",  -- Info | Success | Warning | Error
-    Icon     = "check-circle"
+    Type     = "Success",
+    Icon     = "check-circle",
+    Color    = "#00FF88"
 })
+```
+
+`Type` accepts: `Info`, `Success`, `Warning`, `Error`.
+`Color` overrides the type color entirely.
+
+---
+
+## Lock / Unlock
+
+Global lock disables all interactive elements:
+
+```lua
+Library:Lock()
+Library:Unlock()
+Library:IsLocked()
+Library:SetLockText("Cooldown active")
+```
+
+Per-element lock shows an overlay with custom text:
+
+```lua
+Toggle:Lock("Premium required")
+Toggle:Unlock()
 ```
 
 ---
@@ -334,39 +378,52 @@ Library:Notification({
 ```lua
 local Cfg = Library.Config
 
-Cfg:Create("default", { speed = 16, esp = false })
+Cfg:Create("default", { speed=16 })
 Cfg:SetActive("default")
 Cfg:SetValue("speed", 100)
-print(Cfg:GetValue("speed"))
-
-local json = Cfg:Export("default")
-Cfg:Import("backup", json)
+Cfg:GetValue("speed")
+Cfg:Save("default")
+Cfg:Overwrite("default", { speed=200 })
+Cfg:Load("default")
+Cfg:Delete("default")
+Cfg:Rename("old", "new")
 Cfg:Duplicate("default", "preset1")
-Cfg:Rename("preset1", "mypreset")
-Cfg:Delete("mypreset")
-Cfg:Clear()
-
-print(Cfg:List())
-print(Cfg:Count())
-print(Cfg:Active())
-print(Cfg:Exists("default"))
+Cfg:Import("name", jsonString)
+Cfg:Clear("default")
+Cfg:List()
+Cfg:Count()
+Cfg:Exists("default")
+Cfg:Active()
 ```
+
+`Create` returns `false, "Already exists"` if the name is taken.
 
 ---
 
-## Icon System
+## Library Methods
 
-`Library:Asset(icon)` resolves:
+| Method | Description |
+|---|---|
+| `Library:SetTheme(table)` | Update theme colors at runtime |
+| `Library:GetTheme()` | Returns current theme table |
+| `Library:SetPillIcon(icon)` | Change floating pill icon |
+| `Library:SetExecutorIdentity(bool)` | Show/hide user info block |
+| `Library:SetTimeValue(string)` | Set header time text |
+| `Library:SetWindowTitle(string)` | Change window title |
+| `Library:SetWindowSubTitle(string)` | Change window subtitle |
+| `Library:AddSizeSlider(Page)` | Add a scale slider capped to screen |
+| `Library:Lock()` | Disable all interactions |
+| `Library:Unlock()` | Re-enable all interactions |
+| `Library:IsLocked()` | Returns locked state |
+| `Library:SetLockText(string)` | Change default lock overlay text |
+| `Library:Notification(Args)` | Show a toast notification |
+| `Library:Destroy()` | Destroy entire UI |
 
-| Input | Example | Result |
-|---|---|---|
-| Lucide short name | `"settings"` | Looks up `lucide-settings` |
-| Lucide full name | `"lucide-star"` | Direct lookup |
-| Number | `10734966248` | `rbxassetid://10734966248` |
-| rbxassetid string | `"rbxassetid://123"` | Unchanged |
-| https URL | `"https://example.com/img.png"` | Unchanged |
+---
 
-Icons are loaded from the Arch-Vault Lucide repository at startup.
+## Icons
+
+`Library:Asset(icon)` resolves Lucide short names (`"settings"`), full names (`"lucide-star"`), numeric IDs, `rbxassetid://` strings, and `https://` URLs.
 
 ---
 
@@ -379,9 +436,3 @@ getgenv().ShowImage({
     duration = 5
 })
 ```
-
----
-
-## Scale Behavior
-
-The `UIScale` is attached to the ScreenGui and is automatically clamped so the UI never exceeds 95% of the viewport in either dimension. `Library:AddSizeSlider()` enforces this same cap so the slider cannot set a value that would cause overflow.
