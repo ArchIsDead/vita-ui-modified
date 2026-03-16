@@ -867,6 +867,7 @@ function Library:Window(Args)
         })
         Library:Create("UICorner",{Parent=HF,CornerRadius=UDim.new(0,4)})
         Library:Create("UIGradient",{Parent=HF,
+            Rotation=90,
             Color=ColorSequence.new{
                 ColorSequenceKeypoint.new(0,   Color3.fromRGB(255,0,0)),
                 ColorSequenceKeypoint.new(0.17,Color3.fromRGB(255,255,0)),
@@ -1396,8 +1397,7 @@ function Library:Window(Args)
 
             local RightBlock=Library:Create("Frame",{
                 Parent=InnerPad,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(0,0,0,28),LayoutOrder=3,
-                AutomaticSize=Enum.AutomaticSize.X
+                Size=UDim2.new(0,0,0,28),LayoutOrder=3
             })
             Library:Create("UIListLayout",{Parent=RightBlock,
                 FillDirection=Enum.FillDirection.Horizontal,
@@ -1415,39 +1415,31 @@ function Library:Window(Args)
             end
 
             for bi,btnDef in ipairs(PButtons) do
-                local btnW=math.max(50,string.len(btnDef.Title or "Button")*6+24)
-                local BF=Library:Create("Frame",{
+                local BF=Library:Create("TextButton",{
                     Parent=RightBlock,BackgroundColor3=T.Accent,BorderSizePixel=0,
-                    Size=UDim2.new(0,btnW,0,24),ClipsDescendants=true,LayoutOrder=10+bi
-                })
-                tA(BF,"BackgroundColor3")
-                Library:Create("UICorner",{Parent=BF,CornerRadius=UDim.new(0,3)})
-                AccentGrad(BF)
-                Library:Create("UIListLayout",{Parent=BF,
-                    FillDirection=Enum.FillDirection.Horizontal,
-                    VerticalAlignment=Enum.VerticalAlignment.Center,
-                    HorizontalAlignment=Enum.HorizontalAlignment.Center,
-                    Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder})
-
-                if btnDef.Icon and btnDef.Icon~="" then
-                    Library:Create("ImageLabel",{
-                        Parent=BF,BackgroundTransparency=1,BorderSizePixel=0,
-                        Size=UDim2.new(0,12,0,12),LayoutOrder=1,
-                        Image=Library:Asset(btnDef.Icon)
-                    })
-                end
-                Library:Create("TextLabel",{
-                    Parent=BF,BackgroundTransparency=1,BorderSizePixel=0,
-                    Size=UDim2.new(0,btnW-(btnDef.Icon and 20 or 0),1,0),LayoutOrder=2,
+                    Size=UDim2.new(0,54,0,22),ClipsDescendants=true,LayoutOrder=10+bi,
                     Font=Enum.Font.GothamSemibold,
                     Text=btnDef.Title or "Button",
                     TextColor3=T.Text,TextSize=10,
-                    TextXAlignment=Enum.TextXAlignment.Center
+                    AutoButtonColor=false
                 })
-                local BC=Library:Button(BF)
-                BC.MouseButton1Click:Connect(function()
+                tA(BF,"BackgroundColor3")
+                Library:Create("UICorner",{Parent=BF,CornerRadius=UDim.new(0,3)})
+                Library:Create("UIGradient",{Parent=BF,Rotation=90,Color=ColorSequence.new{
+                    ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),
+                    ColorSequenceKeypoint.new(1,Color3.fromRGB(56,56,56))}})
+                if btnDef.Icon and btnDef.Icon~="" then
+                    Library:Create("ImageLabel",{
+                        Parent=BF,BackgroundTransparency=1,BorderSizePixel=0,
+                        AnchorPoint=Vector2.new(0,0.5),
+                        Position=UDim2.new(0,5,0.5,0),
+                        Size=UDim2.new(0,11,0,11),ZIndex=BF.ZIndex+1,
+                        Image=Library:Asset(btnDef.Icon)
+                    })
+                    BF.TextXAlignment=Enum.TextXAlignment.Right
+                end
+                BF.MouseButton1Click:Connect(function()
                     if _locked then return end
-                    task.spawn(Library.Effect,BC,BF)
                     if btnDef.Callback then pcall(btnDef.Callback) end
                 end)
             end
@@ -1531,60 +1523,64 @@ function Library:Window(Args)
             local Right    = Rows.Vectorize.Right
             local Left     = Rows.Vectorize.Left.Text
 
-            local btnW=math.max(60,string.len(BtnText)*6+32)
-            local Btn=Library:Create("Frame",{
+            local Btn=Library:Create("TextButton",{
                 Name="Button",Parent=Right,
                 BackgroundColor3=T.Accent,BorderSizePixel=0,
-                Size=UDim2.new(0,btnW,0,25),ClipsDescendants=true
+                Size=UDim2.new(0,0,0,24),AutomaticSize=Enum.AutomaticSize.X,
+                ClipsDescendants=true,
+                Font=Enum.Font.GothamSemibold,Text=BtnText,
+                TextColor3=T.Text,TextSize=11,
+                AutoButtonColor=false,TextXAlignment=Enum.TextXAlignment.Center
             })
+            Library:Create("UISizeConstraint",{Parent=Btn,MaxSize=Vector2.new(120,24)})
             tA(Btn,"BackgroundColor3")
             Library:Create("UICorner",{Parent=Btn,CornerRadius=UDim.new(0,3)})
-            AccentGrad(Btn)
-
-            Library:Create("UIListLayout",{Parent=Btn,
-                FillDirection=Enum.FillDirection.Horizontal,
-                HorizontalAlignment=Enum.HorizontalAlignment.Center,
-                VerticalAlignment=Enum.VerticalAlignment.Center,
-                Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder})
+            Library:Create("UIGradient",{Parent=Btn,Rotation=90,
+                Color=ColorSequence.new{
+                    ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),
+                    ColorSequenceKeypoint.new(1,Color3.fromRGB(56,56,56))}})
+            Library:Create("UIPadding",{Parent=Btn,
+                PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8)})
 
             if BIcon and BIcon~="" then
-                Library:Create("ImageLabel",{
-                    Parent=Btn,BackgroundTransparency=1,BorderSizePixel=0,
-                    Size=UDim2.new(0,13,0,13),LayoutOrder=1,
+                local IL=Library:Create("ImageLabel",{
+                    Parent=Btn,AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,
+                    BorderSizePixel=0,Position=UDim2.new(0,6,0.5,0),
+                    Size=UDim2.new(0,12,0,12),ZIndex=Btn.ZIndex+1,
                     Image=Library:Asset(BIcon)
                 })
+                Btn.TextXAlignment=Enum.TextXAlignment.Right
             end
 
-            local BtnLbl=Library:Create("TextLabel",{
-                Name="BtnText",Parent=Btn,
-                BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(0,0,1,0),AutomaticSize=Enum.AutomaticSize.X,
-                LayoutOrder=2,
-                Font=Enum.Font.GothamSemibold,RichText=true,
-                Text=BtnText,TextColor3=T.Text,TextSize=11,
-                TextStrokeTransparency=0.7,TextWrapped=false
-            })
-
-            local Click=Library:Button(Btn)
-            Click.MouseButton1Click:Connect(function()
+            Btn.MouseButton1Click:Connect(function()
                 if _locked or Library:IsDropdownOpen() then return end
-                task.spawn(Library.Effect,Click,Btn)
+                local eff=Library:Create("Frame",{
+                    Parent=Btn,BackgroundColor3=Color3.fromRGB(255,255,255),
+                    BackgroundTransparency=0.7,BorderSizePixel=0,
+                    AnchorPoint=Vector2.new(0.5,0.5),
+                    Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,0,0,0),
+                    ZIndex=Btn.ZIndex+2
+                })
+                Library:Create("UICorner",{Parent=eff,CornerRadius=UDim.new(1,0)})
+                local et=TweenService:Create(eff,TweenInfo.new(0.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+                    Size=UDim2.new(2,0,2,0),BackgroundTransparency=1})
+                et.Completed:Once(function() eff:Destroy() end); et:Play()
                 if Callback then pcall(Callback) end
             end)
 
             local lockOv=MakeLockOverlay(Rows,Args.LockMessage)
             local obj={}
-            function obj:SetTitle(v) Left.Title.Text=tostring(v) end
-            function obj:SetDesc(v)  Left.Desc.Text=tostring(v) end
-            function obj:SetText(v)  BtnLbl.Text=tostring(v) end
+            function obj:SetTitle(v) local t=Left:FindFirstChild("Title"); if t then t.Text=tostring(v) end end
+            function obj:SetDesc(v)  local d=Left:FindFirstChild("Desc");  if d then d.Text=tostring(v) end end
+            function obj:SetText(v)  Btn.Text=tostring(v) end
             function obj:Lock(msg)   lockOv.Visible=true; if msg then lockOv:FindFirstChild("TextLabel",true).Text=msg end end
             function obj:Unlock()    lockOv.Visible=false end
             function obj:Destroy()   Rows:Destroy() end
             setmetatable(obj,{__newindex=function(t,k,v)
                 rawset(t,k,v)
-                if k=="Title" then Left.Title.Text=tostring(v)
-                elseif k=="Desc" then Left.Desc.Text=tostring(v)
-                elseif k=="Text" then BtnLbl.Text=tostring(v) end
+                if k=="Title" then local tl=Left:FindFirstChild("Title"); if tl then tl.Text=tostring(v) end
+                elseif k=="Desc" then local dl=Left:FindFirstChild("Desc"); if dl then dl.Text=tostring(v) end
+                elseif k=="Text" then Btn.Text=tostring(v) end
             end})
             return obj
         end
@@ -2390,17 +2386,16 @@ function Library:Window(Args)
                 HorizontalAlignment=Enum.HorizontalAlignment.Left})
 
             local function MkCfgBtn(text, color, cb)
-                local w=math.max(54,string.len(text)*6+20)
                 local b=Library:Create("TextButton",{
                     Parent=BtnRowFrame,BackgroundColor3=color,BorderSizePixel=0,
-                    Size=UDim2.new(0,w,0,30),
+                    Size=UDim2.new(0,0,0,28),AutomaticSize=Enum.AutomaticSize.X,
                     Font=Enum.Font.GothamSemibold,Text=text,
-                    TextColor3=T.Text,TextSize=11,ClipsDescendants=true
+                    TextColor3=Color3.fromRGB(255,255,255),TextSize=11,ClipsDescendants=true,
+                    AutoButtonColor=false
                 })
                 Library:Create("UICorner",{Parent=b,CornerRadius=UDim.new(0,4)})
-                AccentGrad(b)
+                Library:Create("UIPadding",{Parent=b,PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)})
                 b.MouseButton1Click:Connect(function()
-                    task.spawn(Library.Effect,b,b)
                     if cb then pcall(cb) end
                 end)
                 return b
