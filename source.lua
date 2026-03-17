@@ -78,6 +78,11 @@ do
     function ConfigSystem:Import(n,j)
         local ok,d=pcall(HttpService.JSONDecode,HttpService,j); if not ok then return false end; return self:Save(n,d)
     end
+    function ConfigSystem:Export(n)
+        local c=_store[n or _active]; if not c then return nil end
+        local ok,json=pcall(HttpService.JSONEncode,HttpService,c.data)
+        return ok and json or nil
+    end
     function ConfigSystem:Clear(n)
         n=n or _active; if not _store[n] then return false end
         _store[n].data={}; _store[n].updated=os.time(); return true
@@ -192,68 +197,46 @@ end
 
 function Library:NewRows(parent,title,desc,T)
     local Rows=Library:Create("Frame",{Name="Rows",Parent=parent,
-        BackgroundColor3=T.Row,BorderSizePixel=0,
-        Size=UDim2.new(1,0,0,42),ClipsDescendants=false})
+        BackgroundColor3=T.Row,BorderSizePixel=0,Size=UDim2.new(1,0,0,42)})
     Library:Create("UIStroke",{Parent=Rows,Color=T.Stroke,Thickness=0.5})
     Library:Create("UICorner",{Parent=Rows,CornerRadius=UDim.new(0,4)})
 
-    local Vec=Library:Create("Frame",{Name="Vectorize",Parent=Rows,
-        BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)})
-    Library:Create("UIPadding",{Parent=Vec,PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12)})
-    Library:Create("UIListLayout",{Parent=Vec,FillDirection=Enum.FillDirection.Horizontal,
-        SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center,
-        Padding=UDim.new(0,0)})
-
-    local Left=Library:Create("Frame",{Name="Left",Parent=Vec,
+    local Left=Library:Create("Frame",{Name="Left",Parent=Rows,
         BackgroundTransparency=1,BorderSizePixel=0,
-        Size=UDim2.new(1,0,1,0),LayoutOrder=1})
-    Library:Create("UIListLayout",{Parent=Left,
-        FillDirection=Enum.FillDirection.Vertical,
-        SortOrder=Enum.SortOrder.LayoutOrder,
-        VerticalAlignment=Enum.VerticalAlignment.Center,
-        Padding=UDim.new(0,2)})
-
-    local hasBoth = (title and title~="") and (desc and desc~="")
-    local titleSize = hasBoth and 13 or 13
-    local descSize  = 10
+        AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,12,0.5,0),
+        Size=UDim2.new(1,-116,1,0)})
+    Library:Create("UIListLayout",{Parent=Left,FillDirection=Enum.FillDirection.Vertical,
+        SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,2)})
 
     if title and title~="" then
         local TL=Library:Create("TextLabel",{Name="Title",Parent=Left,
-            BackgroundTransparency=1,BorderSizePixel=0,
-            Size=UDim2.new(1,0,0,titleSize),
-            Font=Enum.Font.GothamSemibold,RichText=true,Text=title,
-            TextColor3=T.Text,TextSize=titleSize,TextStrokeTransparency=0.7,
-            TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,
-            AutomaticSize=Enum.AutomaticSize.None})
+            BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=1,
+            Size=UDim2.new(1,0,0,14),Font=Enum.Font.GothamSemibold,RichText=true,Text=title,
+            TextColor3=T.Text,TextSize=13,TextStrokeTransparency=0.7,
+            TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
         MkGrad(TL)
     else
-        Library:Create("TextLabel",{Name="Title",Parent=Left,
-            BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(0,0,0,0),
-            Text="",TextSize=1,Visible=false})
+        Library:Create("TextLabel",{Name="Title",Parent=Left,BackgroundTransparency=1,
+            BorderSizePixel=0,Size=UDim2.new(0,0,0,0),Text="",TextSize=1,Visible=false,LayoutOrder=1})
     end
 
     if desc and desc~="" then
-        Library:Create("TextLabel",{Name="Desc",Parent=Left,
-            BackgroundTransparency=1,BorderSizePixel=0,
-            Size=UDim2.new(1,0,0,descSize),
+        Library:Create("TextLabel",{Name="Desc",Parent=Left,BackgroundTransparency=1,
+            BorderSizePixel=0,LayoutOrder=2,Size=UDim2.new(1,0,0,11),
             Font=Enum.Font.GothamMedium,RichText=true,Text=desc,
-            TextColor3=T.SubText,TextSize=descSize,TextStrokeTransparency=0.7,
-            TextTransparency=0.25,TextXAlignment=Enum.TextXAlignment.Left,
-            TextWrapped=true,AutomaticSize=Enum.AutomaticSize.None})
+            TextColor3=T.SubText,TextSize=10,TextStrokeTransparency=0.7,TextTransparency=0.25,
+            TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
     else
-        Library:Create("TextLabel",{Name="Desc",Parent=Left,
-            BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(0,0,0,0),
-            Text="",TextSize=1,Visible=false})
+        Library:Create("TextLabel",{Name="Desc",Parent=Left,BackgroundTransparency=1,
+            BorderSizePixel=0,Size=UDim2.new(0,0,0,0),Text="",TextSize=1,Visible=false,LayoutOrder=2})
     end
 
-    local Right=Library:Create("Frame",{Name="Right",Parent=Vec,
+    local Right=Library:Create("Frame",{Name="Right",Parent=Rows,
         BackgroundTransparency=1,BorderSizePixel=0,
-        Size=UDim2.new(0,0,1,0),AutomaticSize=Enum.AutomaticSize.X,
-        LayoutOrder=2})
-    Library:Create("UIListLayout",{Parent=Right,
-        FillDirection=Enum.FillDirection.Horizontal,
-        HorizontalAlignment=Enum.HorizontalAlignment.Right,
-        VerticalAlignment=Enum.VerticalAlignment.Center,
+        AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-12,0.5,0),
+        Size=UDim2.new(0,0,0,34),AutomaticSize=Enum.AutomaticSize.X})
+    Library:Create("UIListLayout",{Parent=Right,FillDirection=Enum.FillDirection.Horizontal,
+        HorizontalAlignment=Enum.HorizontalAlignment.Right,VerticalAlignment=Enum.VerticalAlignment.Center,
         SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,6)})
 
     return Rows
@@ -340,7 +323,7 @@ function Library:Window(Args)
     local AutoScale      = Args.AutoScale~=false
     local BaseScale      = Args.Scale or 1.45
     local CustomSize     = Args.Size
-    local ShowUserInfo   = Args.ExecIdentifyShown~=false
+    local ExecIdShown    = Args.ExecIdentifyShown~=false
     local BbIcon         = Args.BbIcon or "rbxassetid://104055321996495"
     local CustomUserName = Args.UserName
     local CustomExecutor = Args.ExecutorName
@@ -415,98 +398,94 @@ function Library:Window(Args)
         return false
     end
 
-    local HDR_H=50
+    local HDR_H=52
 
     local Header=Library:Create("Frame",{Name="Header",Parent=Background,
         BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,HDR_H)})
     Library:Create("Frame",{Parent=Header,Name="Div",BackgroundColor3=T.Stroke,
         BorderSizePixel=0,AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,1)})
 
-    local ReturnBtn=Library:Create("ImageLabel",{Name="Return",Parent=Header,
-        AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,
-        BorderSizePixel=0,Position=UDim2.new(0,12,0.5,0),
-        Size=UDim2.new(0,20,0,20),
-        Image="rbxassetid://130391877219356",
-        ImageColor3=T.Accent,Visible=false,ZIndex=6})
-    tA(ReturnBtn,"ImageColor3")
+    local ReturnBtn=Library:Create("TextButton",{Name="Return",Parent=Header,
+        BackgroundColor3=T.TabBg,BorderSizePixel=0,
+        AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,9,0.5,0),
+        Size=UDim2.new(0,30,0,30),Text="",AutoButtonColor=false,
+        Visible=false,ZIndex=6,ClipsDescendants=true})
+    Library:Create("UICorner",{Parent=ReturnBtn,CornerRadius=UDim.new(1,0)})
+    Library:Create("UIStroke",{Parent=ReturnBtn,Color=T.Stroke,Thickness=0.6})
+    local RetArrow=Library:Create("ImageLabel",{Parent=ReturnBtn,
+        AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,BorderSizePixel=0,
+        Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,14,0,14),
+        Image="rbxassetid://130391877219356",ImageColor3=T.Accent,ZIndex=7})
+    tA(RetArrow,"ImageColor3")
 
-    local HeaderRow=Library:Create("Frame",{Name="HeaderRow",Parent=Header,
-        BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)})
-    Library:Create("UIPadding",{Parent=HeaderRow,
-        PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12),
-        PaddingTop=UDim.new(0,6),PaddingBottom=UDim.new(0,6)})
-    Library:Create("UIListLayout",{Parent=HeaderRow,
-        FillDirection=Enum.FillDirection.Horizontal,
-        SortOrder=Enum.SortOrder.LayoutOrder,
-        VerticalAlignment=Enum.VerticalAlignment.Center,
-        Padding=UDim.new(0,8)})
-
-    local UserBlock
-    local UserVDiv
-    if ShowUserInfo then
-        UserBlock=Library:Create("Frame",{Name="UserBlock",Parent=HeaderRow,
-            BackgroundTransparency=1,BorderSizePixel=0,
-            Size=UDim2.new(0,152,0,34),LayoutOrder=1})
-        Library:Create("UIListLayout",{Parent=UserBlock,
-            FillDirection=Enum.FillDirection.Horizontal,
-            Padding=UDim.new(0,8),VerticalAlignment=Enum.VerticalAlignment.Center,
-            SortOrder=Enum.SortOrder.LayoutOrder})
-
-        local AvatarRing=Library:Create("Frame",{Parent=UserBlock,
-            BackgroundColor3=T.Accent,BorderSizePixel=0,
-            Size=UDim2.new(0,32,0,32),LayoutOrder=1})
-        Library:Create("UICorner",{Parent=AvatarRing,CornerRadius=UDim.new(1,0)})
-        tA(AvatarRing,"BackgroundColor3")
-
-        local AvatarClip=Library:Create("Frame",{Parent=AvatarRing,
+    local AvatarBtn
+    if ExecIdShown then
+        AvatarBtn=Library:Create("TextButton",{Name="AvatarBtn",Parent=Header,
             BackgroundColor3=T.Background,BorderSizePixel=0,
-            AnchorPoint=Vector2.new(0.5,0.5),
+            AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-10,0.5,0),
+            Size=UDim2.new(0,34,0,34),Text="",AutoButtonColor=false,
+            ZIndex=5,ClipsDescendants=false})
+        Library:Create("UICorner",{Parent=AvatarBtn,CornerRadius=UDim.new(1,0)})
+        local ARing=Library:Create("Frame",{Parent=AvatarBtn,
+            AnchorPoint=Vector2.new(0.5,0.5),BackgroundColor3=T.Accent,BorderSizePixel=0,
+            Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(1,0,1,0)})
+        Library:Create("UICorner",{Parent=ARing,CornerRadius=UDim.new(1,0)})
+        tA(ARing,"BackgroundColor3")
+        local AClip=Library:Create("Frame",{Parent=ARing,
+            AnchorPoint=Vector2.new(0.5,0.5),BackgroundColor3=T.Background,BorderSizePixel=0,
             Position=UDim2.new(0.5,0,0.5,0),
-            Size=UDim2.new(1,-2.5,1,-2.5),ClipsDescendants=true})
-        Library:Create("UICorner",{Parent=AvatarClip,CornerRadius=UDim.new(1,0)})
-
-        local AvatarImg=Library:Create("ImageLabel",{Parent=AvatarClip,
+            Size=UDim2.new(1,-3,1,-3),ClipsDescendants=true})
+        Library:Create("UICorner",{Parent=AClip,CornerRadius=UDim.new(1,0)})
+        tB(AClip,"BackgroundColor3")
+        local AImg=Library:Create("ImageLabel",{Parent=AClip,
             AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,
-            BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),
-            Size=UDim2.new(1,0,1,0),Image=""})
+            BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(1,0,1,0),Image=""})
         task.spawn(function()
             local ok,img=pcall(function()
                 return Players:GetUserThumbnailAsync(LocalPlayer.UserId,Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size48x48)
             end)
-            if ok and img then AvatarImg.Image=img end
+            if ok and img then AImg.Image=img end
         end)
-
-        local UTF=Library:Create("Frame",{Parent=UserBlock,BackgroundTransparency=1,
-            BorderSizePixel=0,Size=UDim2.new(0,108,0,30),LayoutOrder=2})
-        Library:Create("UIListLayout",{Parent=UTF,SortOrder=Enum.SortOrder.LayoutOrder,
-            VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,2)})
-
-        local dispName=CustomUserName or LocalPlayer.DisplayName
-        if dispName and dispName~="" then
-            Library:Create("TextLabel",{Name="UserName",Parent=UTF,
-                BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,13),
-                Font=Enum.Font.GothamBold,Text=dispName,
-                TextColor3=T.Text,TextSize=12,
-                TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd})
-        end
-        local execName=CustomExecutor or GetExec()
-        if execName and execName~="" then
-            local EL=Library:Create("TextLabel",{Name="Executor",Parent=UTF,
-                BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,10),
-                Font=Enum.Font.GothamMedium,Text=execName,
-                TextColor3=T.Accent,TextSize=10,TextTransparency=0.15,
-                TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd})
-            tA(EL,"TextColor3")
-        end
-
-        UserVDiv=Library:Create("Frame",{Name="VDiv",Parent=HeaderRow,
-            BackgroundColor3=T.Stroke,BorderSizePixel=0,
-            Size=UDim2.new(0,1,0,24),LayoutOrder=2,BackgroundTransparency=0.4})
+        local avatarTooltip=Library:Create("Frame",{Parent=Header,
+            BackgroundColor3=T.TabBg,BorderSizePixel=0,
+            AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,-10,1,4),
+            Size=UDim2.new(0,0,0,24),AutomaticSize=Enum.AutomaticSize.X,
+            Visible=false,ZIndex=20})
+        Library:Create("UICorner",{Parent=avatarTooltip,CornerRadius=UDim.new(0,4)})
+        Library:Create("UIStroke",{Parent=avatarTooltip,Color=T.Stroke,Thickness=0.5})
+        Library:Create("UIPadding",{Parent=avatarTooltip,PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8)})
+        local ttLine1=Library:Create("TextLabel",{Parent=avatarTooltip,
+            BackgroundTransparency=1,BorderSizePixel=0,
+            AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,0,0.5,0),
+            Size=UDim2.new(0,0,0,12),AutomaticSize=Enum.AutomaticSize.X,
+            Font=Enum.Font.GothamBold,Text=(CustomUserName or LocalPlayer.DisplayName),
+            TextColor3=T.Text,TextSize=11,ZIndex=21})
+        local ttLine2=Library:Create("TextLabel",{Parent=avatarTooltip,
+            BackgroundTransparency=1,BorderSizePixel=0,
+            AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,0,0.5,11),
+            Size=UDim2.new(0,0,0,10),AutomaticSize=Enum.AutomaticSize.X,
+            Font=Enum.Font.GothamMedium,Text=(CustomExecutor or GetExec()),
+            TextColor3=T.Accent,TextSize=10,ZIndex=21,TextTransparency=0.2})
+        tA(ttLine2,"TextColor3")
+        AvatarBtn.MouseEnter:Connect(function() avatarTooltip.Visible=true end)
+        AvatarBtn.MouseLeave:Connect(function() avatarTooltip.Visible=false end)
     end
 
-    local TitleBlock=Library:Create("Frame",{Name="TitleBlock",Parent=HeaderRow,
+    local HeaderRow=Library:Create("Frame",{Name="HeaderRow",Parent=Header,
+        BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)})
+    Library:Create("UIPadding",{Parent=HeaderRow,
+        PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,ExecIdShown and 52 or 12),
+        PaddingTop=UDim.new(0,7),PaddingBottom=UDim.new(0,7)})
+    Library:Create("UIListLayout",{Parent=HeaderRow,
+        FillDirection=Enum.FillDirection.Horizontal,
+        SortOrder=Enum.SortOrder.LayoutOrder,
+        VerticalAlignment=Enum.VerticalAlignment.Center,
+        Padding=UDim.new(0,0)})
+
+    local TitleBlock=Library:Create("Frame",{Name="TitleBlock",Parent=Header,
         BackgroundTransparency=1,BorderSizePixel=0,
-        Size=UDim2.new(1,-(ShowUserInfo and 215 or 65),0,32),LayoutOrder=3})
+        AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,12,0.5,0),
+        Size=UDim2.new(1,-58,0,34)})
     Library:Create("UIListLayout",{Parent=TitleBlock,
         SortOrder=Enum.SortOrder.LayoutOrder,
         VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,1)})
@@ -529,9 +508,10 @@ function Library:Window(Args)
             TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
     end
 
-    local TimeFrame=Library:Create("Frame",{Name="TimeFrame",Parent=HeaderRow,
+    local TimeFrame=Library:Create("Frame",{Name="TimeFrame",Parent=Header,
         BackgroundTransparency=1,BorderSizePixel=0,
-        Size=UDim2.new(0,0,0,28),LayoutOrder=4,AutomaticSize=Enum.AutomaticSize.X})
+        AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-12,0.5,0),
+        Size=UDim2.new(0,0,0,28),AutomaticSize=Enum.AutomaticSize.X})
     Library:Create("UIListLayout",{Parent=TimeFrame,
         SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center,
         HorizontalAlignment=Enum.HorizontalAlignment.Right})
@@ -590,10 +570,13 @@ function Library:Window(Args)
         Text="",ClipsDescendants=true})
     tB(Pillow,"BackgroundColor3")
     Library:Create("UICorner",{Parent=Pillow,CornerRadius=UDim.new(1,0)})
-    Library:Create("ImageLabel",{Name="Logo",Parent=Pillow,
+    Library:Create("UIStroke",{Parent=Pillow,Color=T.Stroke,Thickness=0.6})
+    local PillLogo=Library:Create("ImageLabel",{Name="Logo",Parent=Pillow,
         AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,
         BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),
-        Size=UDim2.new(0.52,0,0.52,0),Image=Library:Asset(BbIcon)})
+        Size=UDim2.new(0.52,0,0.52,0),Image=Library:Asset(BbIcon),
+        ImageColor3=T.Accent})
+    tA(PillLogo,"ImageColor3")
     Library:Draggable(Pillow)
     Pillow.MouseButton1Click:Connect(function() Background.Visible=not Background.Visible end)
     UserInputService.InputBegan:Connect(function(inp,proc)
@@ -601,14 +584,13 @@ function Library:Window(Args)
         if inp.KeyCode==ToggleKey then Background.Visible=not Background.Visible end
     end)
 
-    local ReturnCB=Library:Button(ReturnBtn)
     local function OnReturn()
         ReturnBtn.Visible=false
-        if UserBlock then UserBlock.Visible=true end
-        if UserVDiv then UserVDiv.Visible=true end
+        if AvatarBtn then AvatarBtn.Visible=true end
+        TitleBlock.Position=UDim2.new(0,12,0.5,0)
         PageService:JumpTo(Home)
     end
-    ReturnCB.MouseButton1Click:Connect(OnReturn)
+    ReturnBtn.MouseButton1Click:Connect(OnReturn)
     PageService:JumpTo(Home)
     Library:Draggable(Header,Background)
 
@@ -756,11 +738,11 @@ function Library:Window(Args)
         end
 
         local svDrag,hueDrag=false,false
-        local SvBtn=Library:Button(SV); SvBtn.ZIndex=604
+        local SvBtn=Library:Button(SV); SvBtn.ZIndex=602; SvBtn.Name="SvBtn"
         SvBtn.InputBegan:Connect(function(inp)
             if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then
                 svDrag=true
-                local rel,pos=SV.AbsoluteSize,SV.AbsolutePosition
+                local pos=SV.AbsolutePosition; local rel=SV.AbsoluteSize
                 S=math.clamp((inp.Position.X-pos.X)/rel.X,0,1)
                 V=math.clamp(1-(inp.Position.Y-pos.Y)/rel.Y,0,1)
                 UpdateAll()
@@ -769,7 +751,7 @@ function Library:Window(Args)
         SvBtn.InputEnded:Connect(function(inp)
             if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then svDrag=false end
         end)
-        local HBtn=Library:Button(HF); HBtn.ZIndex=604
+        local HBtn=Library:Button(HF); HBtn.ZIndex=602; HBtn.Name="HBtn"
         HBtn.InputBegan:Connect(function(inp)
             if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then
                 hueDrag=true
@@ -781,9 +763,10 @@ function Library:Window(Args)
             if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then hueDrag=false end
         end)
         UserInputService.InputChanged:Connect(function(inp)
+            if not PF.Visible then return end
             if inp.UserInputType~=Enum.UserInputType.MouseMovement and inp.UserInputType~=Enum.UserInputType.Touch then return end
             if svDrag then
-                local rel,pos=SV.AbsoluteSize,SV.AbsolutePosition
+                local pos=SV.AbsolutePosition; local rel=SV.AbsoluteSize
                 S=math.clamp((inp.Position.X-pos.X)/rel.X,0,1)
                 V=math.clamp(1-(inp.Position.Y-pos.Y)/rel.Y,0,1)
                 UpdateAll()
@@ -971,8 +954,8 @@ function Library:Window(Args)
         TabCB.MouseButton1Click:Connect(function()
             if _locked then return end
             ReturnBtn.Visible=true
-            if UserBlock then UserBlock.Visible=false end
-            if UserVDiv then UserVDiv.Visible=false end
+            if AvatarBtn then AvatarBtn.Visible=false end
+            TitleBlock.Position=UDim2.new(0,48,0.5,0)
             PageService:JumpTo(NewPage)
         end)
 
@@ -1148,11 +1131,6 @@ function Library:Window(Args)
                 TextStrokeTransparency=0.7,TextXAlignment=Enum.TextXAlignment.Right,
                 TextWrapped=false})
             MkGrad(Lbl)
-            if Args.Icon and Args.Icon~="" then
-                local IL=Library:Create("ImageLabel",{Parent=Right,BackgroundTransparency=1,BorderSizePixel=0,
-                    Size=UDim2.new(0,16,0,16),Image=Library:Asset(Args.Icon),ImageColor3=T.Accent})
-                tA(IL,"ImageColor3")
-            end
             local lov=LockOv(Rows,Args.LockMessage)
             local obj={}
             function obj:SetTitle(v) local t=Left:FindFirstChild("Title"); if t then t.Text=tostring(v) end end
@@ -1197,14 +1175,6 @@ function Library:Window(Args)
             BtnGrad(Btn)
             Library:Create("UIPadding",{Parent=Btn,PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)})
 
-            if BIcon and BIcon~="" then
-                Library:Create("ImageLabel",{Parent=Btn,AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,
-                    BorderSizePixel=0,Position=UDim2.new(0,6,0.5,0),
-                    Size=UDim2.new(0,13,0,13),ZIndex=Btn.ZIndex+1,
-                    Image=Library:Asset(BIcon)})
-                Btn.TextXAlignment=Enum.TextXAlignment.Right
-            end
-
             Btn.MouseButton1Click:Connect(function()
                 if _locked or Library:IsDropdownOpen() then return end
                 Ripple(Btn)
@@ -1236,12 +1206,6 @@ function Library:Window(Args)
             local Rows     = Library:NewRows(PS,TTitle,TDesc,T)
             local Left     = Rows.Left; local Right = Rows.Right
             local TitleLbl = Left:FindFirstChild("Title")
-
-            if Args.Icon and Args.Icon~="" then
-                Library:Create("ImageLabel",{Parent=Right,BackgroundTransparency=1,BorderSizePixel=0,
-                    Size=UDim2.new(0,15,0,15),Image=Library:Asset(Args.Icon),
-                    ImageColor3=T.SubText})
-            end
 
             local Bg=Library:Create("Frame",{Name="ToggleBg",Parent=Right,
                 BackgroundColor3=T.RowAlt,BorderSizePixel=0,Size=UDim2.new(0,22,0,22)})
@@ -1327,11 +1291,6 @@ function Library:Window(Args)
             Library:Create("UIListLayout",{Parent=TopRow,FillDirection=Enum.FillDirection.Horizontal,
                 VerticalAlignment=Enum.VerticalAlignment.Center,
                 SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,5)})
-            if Args.Icon and Args.Icon~="" then
-                Library:Create("ImageLabel",{Parent=TopRow,BackgroundTransparency=1,BorderSizePixel=0,
-                    Size=UDim2.new(0,13,0,13),LayoutOrder=1,
-                    Image=Library:Asset(Args.Icon),ImageColor3=T.SubText})
-            end
             local TitleLbl=Library:Create("TextLabel",{Name="Title",Parent=TopRow,
                 BackgroundTransparency=1,BorderSizePixel=0,
                 Size=UDim2.new(1,-70,0,14),LayoutOrder=2,Selectable=false,
@@ -1540,10 +1499,6 @@ function Library:Window(Args)
 
             Library:Create("ImageLabel",{Parent=Right,BackgroundTransparency=1,BorderSizePixel=0,
                 Size=UDim2.new(0,20,0,20),Image="rbxassetid://132291592681506",ImageTransparency=0.5})
-            if Args.Icon and Args.Icon~="" then
-                Library:Create("ImageLabel",{Parent=Right,BackgroundTransparency=1,BorderSizePixel=0,
-                    Size=UDim2.new(0,16,0,16),Image=Library:Asset(Args.Icon),ImageColor3=T.SubText})
-            end
             local Open=Library:Button(Rows)
 
             local function GetText()
@@ -1738,11 +1693,6 @@ function Library:Window(Args)
             local Rows=Library:NewRows(PS,KTitle,KDesc,T)
             local Right=Rows.Right; local Left=Rows.Left
 
-            if Args.Icon and Args.Icon~="" then
-                Library:Create("ImageLabel",{Parent=Right,BackgroundTransparency=1,BorderSizePixel=0,
-                    Size=UDim2.new(0,16,0,16),Image=Library:Asset(Args.Icon),ImageColor3=T.SubText})
-            end
-
             local KB=Library:Create("Frame",{Name="KeyBind",Parent=Right,
                 BackgroundColor3=T.RowAlt,BorderSizePixel=0,Size=UDim2.new(0,82,0,24),ClipsDescendants=true})
             Library:Create("UICorner",{Parent=KB,CornerRadius=UDim.new(0,4)})
@@ -1797,11 +1747,6 @@ function Library:Window(Args)
             if typeof(Value)=="string" then Value=RC(Value) end
             local Rows=Library:NewRows(PS,CPTitle,CPDesc,T)
             local Right=Rows.Right; local Left=Rows.Left
-
-            if Args.Icon and Args.Icon~="" then
-                Library:Create("ImageLabel",{Parent=Right,BackgroundTransparency=1,BorderSizePixel=0,
-                    Size=UDim2.new(0,16,0,16),Image=Library:Asset(Args.Icon),ImageColor3=T.SubText})
-            end
 
             local Swatch=Library:Create("Frame",{Name="Swatch",Parent=Right,
                 BackgroundColor3=Value,BorderSizePixel=0,Size=UDim2.new(0,42,0,22)})
@@ -1858,6 +1803,146 @@ function Library:Window(Args)
                 elseif k=="Visible" then B.Visible=v
                 elseif k=="Size" then B.Size=v end
             end})
+            return obj
+        end
+
+        function Page:Divider()
+            return Library:Create("Frame",{Name="Divider",Parent=PS,
+                BackgroundColor3=T.Stroke,BorderSizePixel=0,
+                Size=UDim2.new(1,0,0,1),BackgroundTransparency=0.4})
+        end
+
+        function Page:Label(Args)
+            local Rows=Library:NewRows(PS,Args.Title,Args.Desc,T)
+            local Left=Rows.Left
+            local obj={}
+            function obj:SetTitle(v) local t=Left:FindFirstChild("Title"); if t then t.Text=tostring(v) end end
+            function obj:SetDesc(v)  local d=Left:FindFirstChild("Desc");  if d then d.Text=tostring(v) end end
+            function obj:Destroy() Rows:Destroy() end
+            setmetatable(obj,{__newindex=function(t,k,v)
+                rawset(t,k,v)
+                if k=="Title" then local tl=Left:FindFirstChild("Title"); if tl then tl.Text=tostring(v) end
+                elseif k=="Desc" then local dl=Left:FindFirstChild("Desc"); if dl then dl.Text=tostring(v) end end
+            end})
+            return obj
+        end
+
+        function Page:Progress(Args)
+            local PTitle=Args.Title; local PDesc=Args.Desc
+            local Value=math.clamp(Args.Value or 0,0,100)
+            local Max=Args.Max or 100; local Suffix=Args.Suffix or "%"
+            local Color=Args.Color and RC(Args.Color) or nil
+
+            local SF=Library:Create("Frame",{Name="Progress",Parent=PS,
+                BackgroundColor3=T.Row,BorderSizePixel=0,
+                Size=UDim2.new(1,0,0,48),Selectable=false})
+            Library:Create("UICorner",{Parent=SF,CornerRadius=UDim.new(0,4)})
+            Library:Create("UIStroke",{Parent=SF,Color=T.Stroke,Thickness=0.5})
+            Library:Create("UIPadding",{Parent=SF,PaddingBottom=UDim.new(0,4),
+                PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12),PaddingTop=UDim.new(0,4)})
+
+            local TopRow=Library:Create("Frame",{Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,
+                Size=UDim2.new(1,0,0,20)})
+            Library:Create("UIListLayout",{Parent=TopRow,FillDirection=Enum.FillDirection.Horizontal,
+                VerticalAlignment=Enum.VerticalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder})
+            local TitleLbl=Library:Create("TextLabel",{Name="Title",Parent=TopRow,
+                BackgroundTransparency=1,BorderSizePixel=0,
+                Size=UDim2.new(1,-60,0,14),LayoutOrder=1,
+                Font=Enum.Font.GothamSemibold,Text=PTitle or "",TextColor3=T.Text,TextSize=12,
+                TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false})
+            if PTitle and PTitle~="" then MkGrad(TitleLbl) end
+            local ValLbl=Library:Create("TextLabel",{Name="Value",Parent=TopRow,
+                BackgroundTransparency=1,BorderSizePixel=0,
+                Size=UDim2.new(0,60,0,14),LayoutOrder=2,
+                Font=Enum.Font.GothamMedium,Text=tostring(Value)..Suffix,
+                TextColor3=T.SubText,TextSize=11,TextTransparency=0.3,
+                TextXAlignment=Enum.TextXAlignment.Right,TextWrapped=false})
+
+            local BarBg=Library:Create("Frame",{Parent=SF,
+                AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,-4),
+                BackgroundColor3=Color3.fromRGB(18,18,18),BorderSizePixel=0,
+                Size=UDim2.new(1,0,0,7)})
+            Library:Create("UICorner",{Parent=BarBg,CornerRadius=UDim.new(0,4)})
+            local BarFill=Library:Create("Frame",{Parent=BarBg,
+                BackgroundColor3=Color or T.Accent,BorderSizePixel=0,
+                Size=UDim2.new(Value/Max,0,1,0)})
+            Library:Create("UICorner",{Parent=BarFill,CornerRadius=UDim.new(0,4)})
+            BtnGrad(BarFill)
+            if not Color then tA(BarFill,"BackgroundColor3") end
+
+            local Data={Value=Value}
+            local function SetVal(v)
+                v=math.clamp(v,0,Max); Data.Value=v
+                Library:Tween({v=BarFill,t=0.35,s="Exponential",d="Out",g={Size=UDim2.new(v/Max,0,1,0)}}):Play()
+                ValLbl.Text=tostring(math.floor(v))..Suffix
+            end
+
+            local obj={}
+            function obj:SetValue(v) SetVal(v) end
+            function obj:GetValue()  return Data.Value end
+            function obj:SetTitle(v) TitleLbl.Text=tostring(v) end
+            function obj:SetColor(v) BarFill.BackgroundColor3=RC(v) end
+            function obj:Destroy()   SF:Destroy() end
+            setmetatable(obj,{
+                __newindex=function(t,k,v)
+                    rawset(t,k,v)
+                    if k=="Value" then SetVal(v)
+                    elseif k=="Title" then TitleLbl.Text=tostring(v) end
+                end,
+                __index=function(t,k)
+                    if k=="Value" then return Data.Value end; return rawget(t,k)
+                end
+            })
+            return obj
+        end
+
+        function Page:MultiButton(Args)
+            local MTitle=Args.Title; local Buttons=Args.Buttons or {}
+
+            local SF=Library:Create("Frame",{Name="MultiBtn",Parent=PS,
+                BackgroundColor3=T.Row,BorderSizePixel=0,
+                Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y})
+            Library:Create("UICorner",{Parent=SF,CornerRadius=UDim.new(0,4)})
+            Library:Create("UIStroke",{Parent=SF,Color=T.Stroke,Thickness=0.5})
+            Library:Create("UIPadding",{Parent=SF,PaddingTop=UDim.new(0,8),PaddingBottom=UDim.new(0,10),
+                PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12)})
+            Library:Create("UIListLayout",{Parent=SF,FillDirection=Enum.FillDirection.Vertical,
+                SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,8)})
+
+            if MTitle and MTitle~="" then
+                local TL=Library:Create("TextLabel",{Name="Title",Parent=SF,
+                    BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=1,
+                    Size=UDim2.new(1,0,0,14),Font=Enum.Font.GothamSemibold,RichText=true,
+                    Text=MTitle,TextColor3=T.Text,TextSize=13,TextStrokeTransparency=0.7,
+                    TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false})
+                MkGrad(TL)
+            end
+
+            local BtnRow=Library:Create("Frame",{Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,
+                LayoutOrder=2,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y})
+            Library:Create("UIListLayout",{Parent=BtnRow,FillDirection=Enum.FillDirection.Horizontal,
+                SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,6),
+                VerticalAlignment=Enum.VerticalAlignment.Center,Wraps=true})
+
+            for _,bd in ipairs(Buttons) do
+                local Btn=Library:Create("TextButton",{Parent=BtnRow,
+                    BackgroundColor3=bd.Color and RC(bd.Color) or T.Accent,BorderSizePixel=0,
+                    Size=UDim2.new(0,0,0,28),AutomaticSize=Enum.AutomaticSize.X,
+                    Font=Enum.Font.GothamSemibold,Text=bd.Text or "Btn",
+                    TextColor3=T.Text,TextSize=11,ClipsDescendants=true,AutoButtonColor=false})
+                Library:Create("UICorner",{Parent=Btn,CornerRadius=UDim.new(0,4)})
+                Library:Create("UIPadding",{Parent=Btn,PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12)})
+                if not bd.Color then tA(Btn,"BackgroundColor3") end
+                BtnGrad(Btn)
+                Btn.MouseButton1Click:Connect(function()
+                    if _locked then return end
+                    Ripple(Btn)
+                    if bd.Callback then pcall(bd.Callback) end
+                end)
+            end
+
+            local obj={}
+            function obj:Destroy() SF:Destroy() end
             return obj
         end
 
@@ -1974,7 +2059,7 @@ function Library:Window(Args)
 
     function Library:GetTheme() local c={}; for k,v in pairs(T) do c[k]=v end; return c end
     function Library:SetPillIcon(icon) local L=Xova:FindFirstChild("Pillow",true); if L then L.Image=Library:Asset(icon) end end
-    function Library:SetExecutorIdentity(v) if UserBlock then UserBlock.Visible=v==true end end
+    function Library:SetExecutorIdentity(v) if AvatarBtn then AvatarBtn.Visible=v==true end end
     function Library:SetLockText(msg) _lockMsg=msg end
     function Library:Lock()    _locked=true end
     function Library:Unlock()  _locked=false end
