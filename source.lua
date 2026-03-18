@@ -1,4 +1,7 @@
 local Library = {}
+Library._ee1 = "R4 Was Here"
+Library._ee2 = "R4 Was Here"
+Library._ee3 = "R4 Was Here"
 local Players          = game:GetService("Players")
 local RunService       = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -437,7 +440,7 @@ function Library:Window(Args)
     rA(RetArrow,"ImageColor3")
 
     local TitleBlock=Library:Create("Frame",{Name="TitleBlock",Parent=Header,BackgroundTransparency=1,BorderSizePixel=0,
-        AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,50,0.5,0),Size=UDim2.new(1,-20,0,28)})
+        AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,50,0.5,0),Size=UDim2.new(1,-20,0,32)})
     Library:Create("UIListLayout",{Parent=TitleBlock,SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,0)})
     local TitleLabel
     if Title and Title~="" then
@@ -452,9 +455,13 @@ function Library:Window(Args)
             Size=UDim2.new(1,0,0,10),Font=Enum.Font.GothamMedium,RichText=true,Text=SubTitle,
             TextColor3=T.SubText,TextSize=9,TextTransparency=0.4,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
     end
-    local THETIME=Library:Create("TextLabel",{Name="TimerLbl",Parent=TitleBlock,BackgroundTransparency=1,BorderSizePixel=0,
-        Size=UDim2.new(1,0,0,10),Font=Enum.Font.GothamMedium,Text="",TextColor3=T.SubText,
-        TextSize=9,TextTransparency=0.4,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false,Visible=false})
+    local ExtraTitleLabel=Library:Create("TextLabel",{Name="ExtraTitle",Parent=TitleBlock,BackgroundTransparency=1,BorderSizePixel=0,
+        Size=UDim2.new(1,0,0,14),Font=Enum.Font.GothamBold,RichText=true,Text="",
+        TextColor3=T.Accent,TextSize=13,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,Visible=false})
+    rA(ExtraTitleLabel,"TextColor3")
+    local ExtraSubTitleLabel=Library:Create("TextLabel",{Name="ExtraSubTitle",Parent=TitleBlock,BackgroundTransparency=1,BorderSizePixel=0,
+        Size=UDim2.new(1,0,0,10),Font=Enum.Font.GothamMedium,RichText=true,Text="",
+        TextColor3=T.SubText,TextSize=9,TextTransparency=0.4,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,Visible=false})
 
     local Scale=Library:Create("Frame",{Name="Scale",Parent=Background,AnchorPoint=Vector2.new(0,1),BackgroundTransparency=1,
         BorderSizePixel=0,Position=UDim2.new(0,0,1,-8),Size=UDim2.new(1,0,1,-(HDR_H+9)),ClipsDescendants=true})
@@ -523,6 +530,19 @@ function Library:Window(Args)
     end
 
     local _locked=false; local _lockMsg="Locked"
+    local TabLockOv=Library:Create("Frame",{Name="TabLock",Parent=Home,BackgroundColor3=Color3.fromRGB(12,12,14),
+        BackgroundTransparency=0.08,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=20,Visible=false})
+    Library:Create("UICorner",{Parent=TabLockOv,CornerRadius=UDim.new(0,5)})
+    do
+        local inn=Library:Create("Frame",{Parent=TabLockOv,BackgroundTransparency=1,BorderSizePixel=0,
+            AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,0,0,0),AutomaticSize=Enum.AutomaticSize.XY,ZIndex=21})
+        Library:Create("UIListLayout",{Parent=inn,SortOrder=Enum.SortOrder.LayoutOrder,HorizontalAlignment=Enum.HorizontalAlignment.Center,Padding=UDim.new(0,4)})
+        Library:Create("ImageLabel",{Parent=inn,BackgroundTransparency=1,BorderSizePixel=0,
+            Size=UDim2.new(0,20,0,20),Image="rbxassetid://134724289526879",ImageColor3=Color3.fromRGB(180,180,190),ZIndex=22,LayoutOrder=1})
+        Library:Create("TextLabel",{Parent=inn,BackgroundTransparency=1,BorderSizePixel=0,
+            Size=UDim2.new(0,80,0,11),ZIndex=22,LayoutOrder=2,Font=Enum.Font.GothamMedium,
+            Text="Locked",TextColor3=Color3.fromRGB(160,160,170),TextSize=10,TextXAlignment=Enum.TextXAlignment.Center,TextWrapped=true})
+    end
     local function OnReturn()
         ReturnBtn.Visible=false; ScriptIconFrame.Visible=true
         TitleBlock.Position=UDim2.new(0,50,0.5,0); PageService:JumpTo(Home)
@@ -782,7 +802,7 @@ function Library:Window(Args)
                 Size=UDim2.new(0,0,0,0),AutomaticSize=Enum.AutomaticSize.XY,ZIndex=51})
             Library:Create("UIListLayout",{Parent=inner,SortOrder=Enum.SortOrder.LayoutOrder,HorizontalAlignment=Enum.HorizontalAlignment.Center,Padding=UDim.new(0,4)})
             Library:Create("ImageLabel",{Parent=inner,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(0,18,0,18),Image="rbxassetid://6031135061",ImageColor3=Color3.fromRGB(180,180,190),ZIndex=52,LayoutOrder=1})
+                Size=UDim2.new(0,18,0,18),Image="rbxassetid://134724289526879",ImageColor3=Color3.fromRGB(180,180,190),ZIndex=52,LayoutOrder=1})
             Library:Create("TextLabel",{Parent=inner,BackgroundTransparency=1,BorderSizePixel=0,
                 Size=UDim2.new(0,80,0,11),ZIndex=52,LayoutOrder=2,Font=Enum.Font.GothamMedium,
                 Text=msg or _lockMsg,TextColor3=Color3.fromRGB(160,160,170),TextSize=10,
@@ -919,81 +939,82 @@ function Library:Window(Args)
             local Suffix=Args.Suffix or ""; local Callback=Args.Callback or function()end
             local SaveKey=Args.save and (Args.Title or tostring(Args.save))
             if SaveKey and Cfg:getval(SaveKey)~=nil then Value=Cfg:getval(SaveKey) end
-            local SF=Library:Create("Frame",{Name="Slider",Parent=PS,BackgroundColor3=T.Row,BorderSizePixel=0,Size=UDim2.new(1,0,0,50)})
+            local SF=Library:Create("Frame",{Name="Slider",Parent=PS,BackgroundColor3=T.Row,BorderSizePixel=0,Size=UDim2.new(1,0,0,44)})
             Library:Create("UICorner",{Parent=SF,CornerRadius=UDim.new(0,5)}); Library:Create("UIStroke",{Parent=SF,Color=T.Stroke,Thickness=0.5})
-            local TitleLbl=Library:Create("TextLabel",{Name="Title",Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,
-                Position=UDim2.new(0,14,0,10),Size=UDim2.new(1,-78,0,14),Font=Enum.Font.GothamSemibold,RichText=true,
-                Text=Args.Title or "",TextColor3=T.Text,TextSize=12,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false})
-            if Args.Title and Args.Title~="" then MkGrad(TitleLbl) end
-            local ValueBox=Library:Create("TextBox",{Name="ValBox",Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,
-                AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,-14,0,10),Size=UDim2.new(0,62,0,14),
-                Font=Enum.Font.GothamMedium,Text=tostring(Value),TextColor3=T.SubText,TextSize=11,TextTransparency=0.3,
-                TextXAlignment=Enum.TextXAlignment.Right,TextWrapped=false,ClearTextOnFocus=false})
-            local BarTrack=Library:Create("Frame",{Name="BarTrack",Parent=SF,BackgroundColor3=Color3.fromRGB(30,30,30),BorderSizePixel=0,
-                Position=UDim2.new(0,14,0,32),Size=UDim2.new(1,-28,0,6),ClipsDescendants=false})
-            Library:Create("UICorner",{Parent=BarTrack,CornerRadius=UDim.new(0,3)})
-            local Fill=Library:Create("Frame",{Name="Fill",Parent=BarTrack,BackgroundColor3=T.Accent,BorderSizePixel=0,Size=UDim2.new(0,0,1,0),ClipsDescendants=false})
-            rA(Fill,"BackgroundColor3"); Library:Create("UICorner",{Parent=Fill,CornerRadius=UDim.new(0,3)}); BtnGrad(Fill)
-            local Knob=Library:Create("Frame",{Name="Knob",Parent=SF,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,
-                AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0,14,0,35),Size=UDim2.new(0,14,0,14)})
-            Library:Create("UICorner",{Parent=Knob,CornerRadius=UDim.new(1,0)}); Library:Create("UIStroke",{Parent=Knob,Color=Color3.fromRGB(160,160,160),Thickness=0.5})
+            Library:Create("UIPadding",{Parent=SF,PaddingBottom=UDim.new(0,1),PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)})
+            local TextF=Library:Create("Frame",{Name="Text",Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,
+                Position=UDim2.new(0,0,0.1,0),Size=UDim2.new(0,111,0,22)})
+            Library:Create("UIListLayout",{Parent=TextF,SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center})
+            Library:Create("UIPadding",{Parent=TextF,PaddingBottom=UDim.new(0,3)})
+            local TitleLbl=Library:Create("TextLabel",{Name="Title",Parent=TextF,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,BorderSizePixel=0,
+                LayoutOrder=-1,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(1,0,0,13),
+                Font=Enum.Font.GothamSemibold,RichText=true,Text=Args.Title or "",TextColor3=T.Text,TextSize=12,
+                TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,AutomaticSize=Enum.AutomaticSize.Y})
+            Library:Create("UIGradient",{Parent=TitleLbl,Rotation=90,Color=ColorSequence.new{
+                ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),
+                ColorSequenceKeypoint.new(0.75,T.SubText),
+                ColorSequenceKeypoint.new(1,Color3.fromRGB(100,100,100))}})
+            local Scaling=Library:Create("Frame",{Name="Scaling",Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)})
+            local Slide=Library:Create("Frame",{Name="Slide",Parent=Scaling,AnchorPoint=Vector2.new(0,1),BackgroundTransparency=1,BorderSizePixel=0,
+                Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,23)})
+            local ColorBar=Library:Create("Frame",{Name="ColorBar",Parent=Slide,AnchorPoint=Vector2.new(0.5,0.5),
+                BackgroundColor3=Color3.fromRGB(10,10,10),BorderSizePixel=0,
+                Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(1,0,0,5)})
+            Library:Create("UICorner",{Parent=ColorBar,CornerRadius=UDim.new(0,3)})
+            local Fill=Library:Create("Frame",{Name="Fill",Parent=ColorBar,BackgroundColor3=T.Accent,BorderSizePixel=0,Size=UDim2.new(0,0,1,0)})
+            rA(Fill,"BackgroundColor3"); Library:Create("UICorner",{Parent=Fill,CornerRadius=UDim.new(0,3)})
+            Library:Create("UIGradient",{Parent=Fill,Rotation=90,Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(47,47,47))}})
+            Library:Create("Frame",{Name="Circle",Parent=Fill,AnchorPoint=Vector2.new(1,0.5),BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,Position=UDim2.new(1,0,0.5,0),Size=UDim2.new(0,5,0,11)})
+            local ValueBox=Library:Create("TextBox",{Name="Boxvalue",Parent=Scaling,AnchorPoint=Vector2.new(1,0.5),BackgroundTransparency=1,BorderSizePixel=0,
+                Position=UDim2.new(1,-5,0.449,-2),Size=UDim2.new(0,60,0,15),ZIndex=5,
+                Font=Enum.Font.GothamMedium,Text=tostring(Value)..Suffix,TextColor3=T.Text,TextSize=11,TextTransparency=0.5,
+                TextTruncate=Enum.TextTruncate.AtEnd,TextXAlignment=Enum.TextXAlignment.Right,TextWrapped=true,ClearTextOnFocus=false})
             local dragging=false; local Data={Value=Value}
             local function Round(n,d) return math.floor(n*(10^d)+0.5)/(10^d) end
-            local function Redraw(pct)
-                local tW=BarTrack.AbsoluteSize.X
-                if tW<=0 then return end
-                Fill.Size=UDim2.new(pct,0,1,0)
-                Knob.Position=UDim2.new(0,14+pct*tW,0,35)
-            end
             local function UpdateSlider(val)
                 val=math.clamp(val,Min,Max); val=Round(val,Rounding); Data.Value=val
                 if SaveKey then Cfg:setval(SaveKey,val) end
-                local pct=(val-Min)/(Max-Min)
-                Redraw(pct)
+                local ratio=(val-Min)/(Max-Min)
+                Library:Tween({v=Fill,t=0.1,s="Linear",d="Out",g={Size=UDim2.new(ratio,0,1,0)}}):Play()
                 ValueBox.Text=tostring(val)..(Suffix~="" and (" "..Suffix) or "")
                 pcall(Callback,val); return val
             end
             local function GetVal(inp)
-                local ax=BarTrack.AbsolutePosition.X; local aw=BarTrack.AbsoluteSize.X
+                local ax=ColorBar.AbsolutePosition.X; local aw=ColorBar.AbsoluteSize.X
                 if aw<=0 then return Value end
                 return math.clamp((inp.Position.X-ax)/aw,0,1)*(Max-Min)+Min
             end
-            local function SetDrag(s)
+            local function SetDragging(s)
                 dragging=s
-                Library:Tween({v=ValueBox,t=0.12,s="Exponential",d="Out",g={TextColor3=s and T.Accent or T.SubText,TextTransparency=s and 0 or 0.3}}):Play()
+                local col=s and T.Accent or T.Text
+                Library:Tween({v=ValueBox,t=s and 0.3 or 0.3,s="Back",d="Out",g={TextSize=s and 15 or 11}}):Play()
+                Library:Tween({v=ValueBox,t=0.2,s="Exponential",d="Out",g={TextColor3=col}}):Play()
+                Library:Tween({v=TitleLbl,t=0.2,s="Exponential",d="Out",g={TextColor3=col}}):Play()
             end
             local HitBtn=Library:Button(SF); HitBtn.ZIndex=4
             HitBtn.InputBegan:Connect(function(inp)
                 if _locked or Library:IsDropdownOpen() then return end
                 if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then
-                    SetDrag(true); UpdateSlider(GetVal(inp))
+                    SetDragging(true); UpdateSlider(GetVal(inp))
                 end
             end)
             HitBtn.InputEnded:Connect(function(inp)
-                if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then SetDrag(false) end
+                if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then SetDragging(false) end
             end)
             UserInputService.InputChanged:Connect(function(inp)
                 if Library:IsDropdownOpen() then return end
                 if dragging and (inp.UserInputType==Enum.UserInputType.MouseMovement or inp.UserInputType==Enum.UserInputType.Touch) then UpdateSlider(GetVal(inp)) end
             end)
-            ValueBox.Focused:Connect(function() Library:Tween({v=ValueBox,t=0.12,s="Exponential",d="Out",g={TextColor3=T.Accent,TextTransparency=0}}):Play() end)
+            ValueBox.Focused:Connect(function()
+                Library:Tween({v=ValueBox,t=0.2,s="Exponential",d="Out",g={TextColor3=T.Accent}}):Play()
+                Library:Tween({v=TitleLbl,t=0.2,s="Exponential",d="Out",g={TextColor3=T.Accent}}):Play()
+            end)
             ValueBox.FocusLost:Connect(function()
-                Library:Tween({v=ValueBox,t=0.12,s="Exponential",d="Out",g={TextColor3=T.SubText,TextTransparency=0.3}}):Play()
+                Library:Tween({v=ValueBox,t=0.2,s="Exponential",d="Out",g={TextColor3=T.Text}}):Play()
+                Library:Tween({v=TitleLbl,t=0.2,s="Exponential",d="Out",g={TextColor3=T.Text}}):Play()
                 Value=UpdateSlider(tonumber(ValueBox.Text:match("%-?%d+%.?%d*")) or Value)
             end)
-            BarTrack:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-                local pct=(Data.Value-Min)/(Max-Min); Redraw(pct)
-            end)
-            task.spawn(function()
-                local t0=tick()
-                while tick()-t0<10 do
-                    RunService.Heartbeat:Wait()
-                    if BarTrack.AbsoluteSize.X>0 then
-                        local pct=(Data.Value-Min)/(Max-Min); Redraw(pct)
-                        break
-                    end
-                end
-            end)
+            UpdateSlider(Value)
             local lov=LockOv(SF,Args.LockMessage); local obj={}
             function obj:SetTitle(v) TitleLbl.Text=tostring(v) end
             function obj:SetValue(v) UpdateSlider(v) end
@@ -1003,10 +1024,8 @@ function Library:Window(Args)
             function obj:Unlock() lov.Visible=false end; function obj:Destroy() SF:Destroy() end
             setmetatable(obj,{
                 __newindex=function(t,k,v) rawset(t,k,v)
-                    if k=="Title" then TitleLbl.Text=tostring(v)
-                    elseif k=="Value" then UpdateSlider(v)
-                    elseif k=="Min" then Min=v
-                    elseif k=="Max" then Max=v end end,
+                    if k=="Title" then TitleLbl.Text=tostring(v) elseif k=="Value" then UpdateSlider(v)
+                    elseif k=="Min" then Min=v elseif k=="Max" then Max=v end end,
                 __index=function(t,k) if k=="Value" then return Data.Value end; return rawget(t,k) end})
             return obj
         end
@@ -1222,26 +1241,13 @@ function Library:Window(Args)
         return Page
     end
 
-    function Library:SetTimeValue(v) THETIME.Text=tostring(v); THETIME.Visible=tostring(v)~="" end
-    function Library:SetTimer(fn)
-        if fn==false or fn==nil then THETIME.Visible=false; THETIME.Text=""; return end
-        THETIME.Visible=true
-        if type(fn)=="function" then
-            task.spawn(function()
-                while THETIME and THETIME.Parent do
-                    local ok,v=pcall(fn); if ok and v then THETIME.Text=tostring(v) end; task.wait(1)
-                end
-            end)
-        else
-            local startT=tick()
-            task.spawn(function()
-                while THETIME and THETIME.Parent do
-                    local e=tick()-startT
-                    THETIME.Text=string.format("%02d:%02d:%02d",math.floor(e/3600),math.floor((e%3600)/60),math.floor(e%60))
-                    task.wait(1)
-                end
-            end)
-        end
+    function Library:SetExtraTitle(v)
+        if v and v~="" then ExtraTitleLabel.Text=tostring(v); ExtraTitleLabel.Visible=true
+        else ExtraTitleLabel.Visible=false; ExtraTitleLabel.Text="" end
+    end
+    function Library:SetExtraSubTitle(v)
+        if v and v~="" then ExtraSubTitleLabel.Text=tostring(v); ExtraSubTitleLabel.Visible=true
+        else ExtraSubTitleLabel.Visible=false; ExtraSubTitleLabel.Text="" end
     end
     function Library:SetWindowTitle(v)    if TitleLabel    then TitleLabel.Text=tostring(v)    end end
     function Library:SetWindowSubTitle(v) if SubTitleLabel then SubTitleLabel.Text=tostring(v) end end
@@ -1266,8 +1272,15 @@ function Library:Window(Args)
     function Library:GetTheme() local c={}; for k,v in pairs(T) do c[k]=v end; return c end
     function Library:SetPillIcon(icon) if PillLogo then PillLogo.Image=Library:Asset(icon) end end
     function Library:SetLockText(msg)  _lockMsg=msg end
-    function Library:Lock()            _locked=true  end
-    function Library:Unlock()          _locked=false end
+    function Library:Lock()
+        _locked=true
+        TabLockOv.Visible=true
+        if ReturnBtn.Visible then PageService:JumpTo(Home); OnReturn() end
+    end
+    function Library:Unlock()
+        _locked=false
+        TabLockOv.Visible=false
+    end
     function Library:IsLocked()        return _locked end
     function Library:Destroy()
         pcall(function() Xova:Destroy() end)
