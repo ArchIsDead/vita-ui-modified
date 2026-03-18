@@ -323,6 +323,8 @@ function Library:NewRows(parent,title,desc,T)
     return {Frame=Frame,Left=Left,Right=Right}
 end
 
+local T_ACCENT_FALLBACK = Color3.fromRGB(100,149,237)
+
 local NotifGui=Library:Create("ScreenGui",{Name="VitaNotifs",Parent=Library:Parent(),
     ZIndexBehavior=Enum.ZIndexBehavior.Global,DisplayOrder=999,IgnoreGuiInset=true,ResetOnSpawn=false})
 local NotifHolder=Library:Create("Frame",{Name="Holder",Parent=NotifGui,BackgroundTransparency=1,
@@ -332,10 +334,7 @@ Library:Create("UIListLayout",{Parent=NotifHolder,VerticalAlignment=Enum.Vertica
 
 function Library:Notification(Args)
     local Title=Args.Title or "Notification"; local Desc=Args.Desc or ""; local Duration=Args.Duration or 3
-    local ac=Args.Color and RC(Args.Color) or ({
-        Info=Color3.fromRGB(100,149,237),Success=Color3.fromRGB(50,200,100),
-        Warning=Color3.fromRGB(255,165,0),Error=Color3.fromRGB(220,50,50)
-    })[Args.Type or "Info"] or Color3.fromRGB(100,149,237)
+    local ac=Args.Color and RC(Args.Color) or T_ACCENT_FALLBACK or Color3.fromRGB(100,149,237)
     local N=Library:Create("Frame",{Parent=NotifHolder,BackgroundColor3=Color3.fromRGB(14,14,14),
         BorderSizePixel=0,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1})
     Library:Create("UICorner",{Parent=N,CornerRadius=UDim.new(0,8)})
@@ -377,6 +376,7 @@ function Library:Window(Args)
         TabStroke=RC(uT.TabStroke or Color3.fromRGB(75,0,38)),TabImage=RC(uT.TabImage or uT.Accent or Color3.fromRGB(255,0,127)),
         DropBg=RC(uT.DropBg or Color3.fromRGB(16,16,16)),PillBg=RC(uT.PillBg or Color3.fromRGB(11,11,11)),
     }
+    T_ACCENT_FALLBACK=T.Accent
     local _R={a={},bg={},row={},alt={},str={},txt={},sub={},tb={},ts={},ti={},db={}}
     local function rA(i,p)   table.insert(_R.a,  {i,p}); return i end
     local function rB(i,p)   table.insert(_R.bg, {i,p}); return i end
@@ -459,15 +459,15 @@ function Library:Window(Args)
     local Scale=Library:Create("Frame",{Name="Scale",Parent=Background,AnchorPoint=Vector2.new(0,1),BackgroundTransparency=1,
         BorderSizePixel=0,Position=UDim2.new(0,0,1,-12),Size=UDim2.new(1,0,1,-(HDR_H+13)),ClipsDescendants=true})
     local Home=Library:Create("Frame",{Name="Home",Parent=Scale,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)})
-    Library:Create("UIPadding",{Parent=Home,PaddingBottom=UDim.new(0,14),PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12),PaddingTop=UDim.new(0,10)})
     local MTS=Library:Create("ScrollingFrame",{Name="TabScrolling",Parent=Home,Active=true,BackgroundTransparency=1,BorderSizePixel=0,
         Size=UDim2.new(1,0,1,0),ClipsDescendants=true,AutomaticCanvasSize=Enum.AutomaticSize.None,
         BottomImage="rbxasset://textures/ui/Scroll/scroll-bottom.png",CanvasPosition=Vector2.new(0,0),
         ElasticBehavior=Enum.ElasticBehavior.WhenScrollable,MidImage="rbxasset://textures/ui/Scroll/scroll-middle.png",
-        ScrollBarImageColor3=Color3.fromRGB(0,0,0),ScrollBarThickness=0,ScrollingDirection=Enum.ScrollingDirection.XY,
+        ScrollBarImageColor3=T.Stroke,ScrollBarThickness=2,ScrollingDirection=Enum.ScrollingDirection.Y,
         TopImage="rbxasset://textures/ui/Scroll/scroll-top.png",VerticalScrollBarPosition=Enum.VerticalScrollBarPosition.Right})
-    local MTL=Library:Create("UIListLayout",{Parent=MTS,Padding=UDim.new(0,10),FillDirection=Enum.FillDirection.Horizontal,SortOrder=Enum.SortOrder.LayoutOrder,Wraps=true})
-    MTL:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() MTS.CanvasSize=UDim2.new(0,0,0,MTL.AbsoluteContentSize.Y+15) end)
+    Library:Create("UIPadding",{Parent=MTS,PaddingTop=UDim.new(0,10),PaddingBottom=UDim.new(0,10),PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12)})
+    local MTL=Library:Create("UIGridLayout",{Parent=MTS,CellSize=UDim2.new(0.5,-7,0,72),CellPadding=UDim2.new(0,10,0,10),SortOrder=Enum.SortOrder.LayoutOrder,HorizontalAlignment=Enum.HorizontalAlignment.Left,VerticalAlignment=Enum.VerticalAlignment.Top})
+    MTL:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() MTS.CanvasSize=UDim2.new(0,0,0,MTL.AbsoluteContentSize.Y+20) end)
     local PageService=Library:Create("UIPageLayout",{Parent=Scale})
     PageService.HorizontalAlignment=Enum.HorizontalAlignment.Left; PageService.EasingStyle=Enum.EasingStyle.Exponential
     PageService.TweenTime=0.4; PageService.GamepadInputEnabled=false; PageService.ScrollWheelInputEnabled=false; PageService.TouchInputEnabled=false
@@ -534,76 +534,103 @@ function Library:Window(Args)
     local function BuildColorPicker(parentFrame,initialColor,onChanged)
         local H,S,V=Color3.toHSV(initialColor); local cur=initialColor
         local PF=Library:Create("Frame",{Name="ColorPickerFrame",Parent=parentFrame,AnchorPoint=Vector2.new(0.5,0.5),
-            BackgroundColor3=Color3.fromRGB(22,22,22),BorderSizePixel=0,Position=UDim2.new(0.5,0,0.35,0),
-            Size=UDim2.new(0,270,0,260),ZIndex=600,Visible=false})
-        Library:Create("UICorner",{Parent=PF,CornerRadius=UDim.new(0,10)})
-        Library:Create("UIStroke",{Parent=PF,Color=Color3.fromRGB(50,50,50),Thickness=0.8})
-        local SVF=Library:Create("Frame",{Parent=PF,BackgroundColor3=Color3.fromHSV(H,1,1),BorderSizePixel=0,
-            AnchorPoint=Vector2.new(0.5,0),Position=UDim2.new(0.5,0,0,0),Size=UDim2.new(1,0,0,145),ZIndex=601,ClipsDescendants=false})
-        Library:Create("UICorner",{Parent=SVF,CornerRadius=UDim.new(0,10)})
-        local SVFClip=Library:Create("Frame",{Parent=SVF,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=601,ClipsDescendants=true})
-        Library:Create("UICorner",{Parent=SVFClip,CornerRadius=UDim.new(0,10)})
-        Library:Create("UIGradient",{Parent=SVFClip,Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(255,255,255))},
+            BackgroundColor3=Color3.fromRGB(20,20,22),BorderSizePixel=0,Position=UDim2.new(0.5,0,0.35,0),
+            Size=UDim2.new(0,280,0,200),ZIndex=600,Visible=false})
+        Library:Create("UICorner",{Parent=PF,CornerRadius=UDim.new(0,8)})
+        Library:Create("UIStroke",{Parent=PF,Color=Color3.fromRGB(55,55,60),Thickness=0.8})
+        Library:Create("UIPadding",{Parent=PF,PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10),PaddingTop=UDim.new(0,10),PaddingBottom=UDim.new(0,10)})
+
+        local SVArea=Library:Create("Frame",{Parent=PF,BackgroundColor3=Color3.fromHSV(H,1,1),BorderSizePixel=0,
+            AnchorPoint=Vector2.new(0,0),Position=UDim2.new(0,0,0,0),Size=UDim2.new(1,0,1,-36),ZIndex=601,ClipsDescendants=true})
+        Library:Create("UICorner",{Parent=SVArea,CornerRadius=UDim.new(0,6)})
+
+        local WhiteO=Library:Create("Frame",{Parent=SVArea,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=602})
+        Library:Create("UICorner",{Parent=WhiteO,CornerRadius=UDim.new(0,6)})
+        Library:Create("UIGradient",{Parent=WhiteO,Rotation=90,
+            Color=ColorSequence.new(Color3.fromRGB(255,255,255)),
             Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(1,1)}})
-        local BL=Library:Create("Frame",{Parent=SVFClip,BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=0,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=602})
-        Library:Create("UIGradient",{Parent=BL,Rotation=90,Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(0,0,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,0,0))},
+
+        local BlackO=Library:Create("Frame",{Parent=SVArea,BackgroundColor3=Color3.fromRGB(0,0,0),BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=603})
+        Library:Create("UICorner",{Parent=BlackO,CornerRadius=UDim.new(0,6)})
+        Library:Create("UIGradient",{Parent=BlackO,Rotation=0,
+            Color=ColorSequence.new(Color3.fromRGB(0,0,0)),
             Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,0)}})
-        local SVC=Library:Create("Frame",{Parent=PF,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,
-            AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0,0,0,0),Size=UDim2.new(0,14,0,14),ZIndex=610})
-        Library:Create("UICorner",{Parent=SVC,CornerRadius=UDim.new(1,0)})
-        Library:Create("UIStroke",{Parent=SVC,Color=Color3.fromRGB(0,0,0),Thickness=2})
-        local Bottom=Library:Create("Frame",{Parent=PF,BackgroundTransparency=1,BorderSizePixel=0,
-            Position=UDim2.new(0,0,0,150),Size=UDim2.new(1,0,0,110),ZIndex=601})
-        Library:Create("UIPadding",{Parent=Bottom,PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14)})
-        Library:Create("UIListLayout",{Parent=Bottom,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,10),FillDirection=Enum.FillDirection.Vertical})
-        local function MkSlider(label,zo)
-            local row=Library:Create("Frame",{Parent=Bottom,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,38),ZIndex=601,LayoutOrder=zo})
-            Library:Create("TextLabel",{Parent=row,BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0,0,0,0),Size=UDim2.new(1,-40,0,14),Font=Enum.Font.GothamMedium,Text=label,TextColor3=Color3.fromRGB(175,175,175),TextSize=11,ZIndex=601})
-            local vl=Library:Create("TextLabel",{Parent=row,BackgroundTransparency=1,BorderSizePixel=0,AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,0,0,0),Size=UDim2.new(0,40,0,14),Font=Enum.Font.GothamMedium,Text="0",TextColor3=Color3.fromRGB(175,175,175),TextSize=11,TextXAlignment=Enum.TextXAlignment.Right,ZIndex=601})
-            local bg=Library:Create("Frame",{Parent=row,BackgroundColor3=Color3.fromRGB(38,38,38),BorderSizePixel=0,AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,14),ZIndex=601})
-            Library:Create("UICorner",{Parent=bg,CornerRadius=UDim.new(0,7)})
-            local fill=Library:Create("Frame",{Parent=bg,BorderSizePixel=0,Size=UDim2.new(0,0,1,0),ZIndex=602,ClipsDescendants=false})
-            Library:Create("UICorner",{Parent=fill,CornerRadius=UDim.new(0,7)})
-            local thumb=Library:Create("Frame",{Parent=fill,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,0,0.5,0),Size=UDim2.new(0,18,0,18),ZIndex=603})
-            Library:Create("UICorner",{Parent=thumb,CornerRadius=UDim.new(1,0)})
-            Library:Create("UIStroke",{Parent=thumb,Color=Color3.fromRGB(0,0,0),Thickness=1.5})
-            local hit=Library:Create("TextButton",{Parent=bg,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),Text="",ZIndex=605,AutoButtonColor=false})
-            return vl,bg,fill,hit
-        end
-        local hVL,hBg,hFill,hHit=MkSlider("Hue",1)
-        Library:Create("UIGradient",{Parent=hBg,Color=ColorSequence.new{
-            ColorSequenceKeypoint.new(0,Color3.fromRGB(255,0,0)),ColorSequenceKeypoint.new(0.17,Color3.fromRGB(255,255,0)),
-            ColorSequenceKeypoint.new(0.33,Color3.fromRGB(0,255,0)),ColorSequenceKeypoint.new(0.50,Color3.fromRGB(0,255,255)),
-            ColorSequenceKeypoint.new(0.67,Color3.fromRGB(0,0,255)),ColorSequenceKeypoint.new(0.83,Color3.fromRGB(255,0,255)),
+
+        local SVDot=Library:Create("Frame",{Parent=SVArea,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,
+            AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromOffset(0,0),Size=UDim2.fromOffset(10,10),ZIndex=610})
+        Library:Create("UICorner",{Parent=SVDot,CornerRadius=UDim.new(1,0)})
+        Library:Create("UIStroke",{Parent=SVDot,Color=Color3.fromRGB(0,0,0),Thickness=1.5})
+
+        local HueBar=Library:Create("Frame",{Parent=PF,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,
+            AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,22),ZIndex=601,ClipsDescendants=false})
+        Library:Create("UICorner",{Parent=HueBar,CornerRadius=UDim.new(0,6)})
+        Library:Create("UIGradient",{Parent=HueBar,Rotation=0,Color=ColorSequence.new{
+            ColorSequenceKeypoint.new(0,Color3.fromRGB(255,0,0)),
+            ColorSequenceKeypoint.new(0.167,Color3.fromRGB(255,255,0)),
+            ColorSequenceKeypoint.new(0.333,Color3.fromRGB(0,255,0)),
+            ColorSequenceKeypoint.new(0.5,Color3.fromRGB(0,255,255)),
+            ColorSequenceKeypoint.new(0.667,Color3.fromRGB(0,0,255)),
+            ColorSequenceKeypoint.new(0.833,Color3.fromRGB(255,0,255)),
             ColorSequenceKeypoint.new(1,Color3.fromRGB(255,0,0))}})
-        local sVL,sBg,sFill,sHit=MkSlider("Saturation",2)
-        local CloseCP=Library:Create("TextButton",{Parent=PF,BackgroundColor3=Color3.fromRGB(35,35,35),BorderSizePixel=0,
-            AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,-6,0,6),Size=UDim2.new(0,24,0,24),
-            Font=Enum.Font.GothamBold,Text="✕",TextColor3=Color3.fromRGB(140,140,140),TextSize=13,ZIndex=608,AutoButtonColor=false})
+
+        local HueDrag=Library:Create("Frame",{Parent=HueBar,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,
+            AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0,0,0.5,0),Size=UDim2.fromOffset(4,26),ZIndex=612})
+        Library:Create("UICorner",{Parent=HueDrag,CornerRadius=UDim.new(0,2)})
+        Library:Create("UIStroke",{Parent=HueDrag,Color=Color3.fromRGB(0,0,0),Thickness=1})
+
+        local CloseCP=Library:Create("TextButton",{Parent=PF,BackgroundColor3=Color3.fromRGB(35,35,38),BorderSizePixel=0,
+            AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,-10,0,10),Size=UDim2.fromOffset(20,20),
+            Font=Enum.Font.GothamBold,Text="✕",TextColor3=Color3.fromRGB(140,140,140),TextSize=11,ZIndex=620,AutoButtonColor=false})
         Library:Create("UICorner",{Parent=CloseCP,CornerRadius=UDim.new(1,0)})
+
+        local svDragging=false; local hueDragging=false
+
         local function UpdCP()
-            cur=Color3.fromHSV(H,S,V); SVF.BackgroundColor3=Color3.fromHSV(H,1,1)
-            local pfp=PF.AbsolutePosition; local svp=SVF.AbsolutePosition; local svs=SVF.AbsoluteSize
-            local cx=svp.X+S*svs.X-pfp.X; local cy=svp.Y+(1-V)*svs.Y-pfp.Y
-            SVC.Position=UDim2.new(0,cx,0,cy)
-            hFill.Size=UDim2.new(H,0,1,0); hFill.BackgroundColor3=Color3.fromHSV(H,1,1); hVL.Text=tostring(math.floor(H*360))
-            sFill.Size=UDim2.new(S,0,1,0); sFill.BackgroundColor3=Color3.fromHSV(H,S,1); sVL.Text=tostring(math.floor(S*100)).."%"
+            cur=Color3.fromHSV(H,S,V)
+            SVArea.BackgroundColor3=Color3.fromHSV(H,1,1)
+            local svW=SVArea.AbsoluteSize.X; local svH=SVArea.AbsoluteSize.Y
+            if svW>0 then SVDot.Position=UDim2.fromOffset(S*svW, (1-V)*svH) end
+            local hW=HueBar.AbsoluteSize.X
+            if hW>0 then HueDrag.Position=UDim2.new(0,H*hW,0.5,0) end
             pcall(onChanged,cur)
         end
-        local svD,hA,sA=false,false,false
-        local SvB=Library:Button(SVF); SvB.ZIndex=603
-        SvB.InputBegan:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then svD=true; local p=SVF.AbsolutePosition; local sz=SVF.AbsoluteSize; S=math.clamp((inp.Position.X-p.X)/sz.X,0,1); V=math.clamp(1-(inp.Position.Y-p.Y)/sz.Y,0,1); UpdCP() end end)
-        SvB.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then svD=false end end)        local function MkSD(hit,bg2,sa,sv) hit.InputBegan:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then sa(true);sv(math.clamp((inp.Position.X-bg2.AbsolutePosition.X)/bg2.AbsoluteSize.X,0,1));UpdCP() end end); hit.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then sa(false) end end) end
-        MkSD(hHit,hBg,function(v)hA=v end,function(v)H=v end)
-        MkSD(sHit,sBg,function(v)sA=v end,function(v)S=v end)
+
+        local SVBtn=Library:Button(SVArea); SVBtn.ZIndex=615
+        SVBtn.InputBegan:Connect(function(inp)
+            if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then
+                svDragging=true
+                local p=SVArea.AbsolutePosition; local sz=SVArea.AbsoluteSize
+                S=math.clamp((inp.Position.X-p.X)/sz.X,0,1); V=math.clamp(1-(inp.Position.Y-p.Y)/sz.Y,0,1); UpdCP()
+            end
+        end)
+        SVBtn.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then svDragging=false end end)
+
+        local HueBtn=Library:Button(HueBar); HueBtn.ZIndex=615
+        HueBtn.InputBegan:Connect(function(inp)
+            if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then
+                hueDragging=true
+                local p=HueBar.AbsolutePosition; local sz=HueBar.AbsoluteSize
+                H=math.clamp((inp.Position.X-p.X)/sz.X,0,1); UpdCP()
+            end
+        end)
+        HueBtn.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then hueDragging=false end end)
+
         UserInputService.InputChanged:Connect(function(inp)
             if not PF.Visible then return end
             if inp.UserInputType~=Enum.UserInputType.MouseMovement and inp.UserInputType~=Enum.UserInputType.Touch then return end
-            if svD then local p=SVF.AbsolutePosition; local sz=SVF.AbsoluteSize; S=math.clamp((inp.Position.X-p.X)/sz.X,0,1); V=math.clamp(1-(inp.Position.Y-p.Y)/sz.Y,0,1); UpdCP()
-            elseif hA then H=math.clamp((inp.Position.X-hBg.AbsolutePosition.X)/hBg.AbsoluteSize.X,0,1); UpdCP()
-            elseif sA then S=math.clamp((inp.Position.X-sBg.AbsolutePosition.X)/sBg.AbsoluteSize.X,0,1); UpdCP() end
+            if svDragging then
+                local p=SVArea.AbsolutePosition; local sz=SVArea.AbsoluteSize
+                S=math.clamp((inp.Position.X-p.X)/sz.X,0,1); V=math.clamp(1-(inp.Position.Y-p.Y)/sz.Y,0,1); UpdCP()
+            elseif hueDragging then
+                local p=HueBar.AbsolutePosition; local sz=HueBar.AbsoluteSize
+                H=math.clamp((inp.Position.X-p.X)/sz.X,0,1); UpdCP()
+            end
         end)
-        UserInputService.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then svD=false;hA=false;sA=false end end)
+        UserInputService.InputEnded:Connect(function(inp)
+            if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then
+                svDragging=false; hueDragging=false
+            end
+        end)
         UserInputService.InputBegan:Connect(function(A)
             if not PF.Visible then return end
             if A.UserInputType~=Enum.UserInputType.MouseButton1 and A.UserInputType~=Enum.UserInputType.Touch then return end
@@ -611,8 +638,10 @@ function Library:Window(Args)
             if not(m.X>=dp.X and m.X<=dp.X+ds.X and m.Y>=dp.Y and m.Y<=dp.Y+ds.Y) then PF.Visible=false end
         end)
         CloseCP.MouseButton1Click:Connect(function() PF.Visible=false end)
-        UpdCP()
-        return PF,function() return cur end,function(c) H,S,V=Color3.toHSV(c); UpdCP() end
+        task.defer(UpdCP)
+        SVArea:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdCP)
+        HueBar:GetPropertyChangedSignal("AbsoluteSize"):Connect(UpdCP)
+        return PF, function() return cur end, function(c) H,S,V=Color3.toHSV(c); UpdCP() end
     end
 
     local Window={}
@@ -660,7 +689,7 @@ function Library:Window(Args)
     function Window:NewPage(Args)
         local PageTitle=Args.Title or "Page"; local PageDesc=Args.Desc or ""
         local PageIcon=Args.Icon or 127194456372995; local TabImg=Args.TabImage
-        local NewTabs=Library:Create("Frame",{Name="NewTabs",Parent=MTS,BackgroundColor3=T.TabBg,BorderSizePixel=0,Size=UDim2.new(0,230,0,56),ClipsDescendants=true})
+        local NewTabs=Library:Create("Frame",{Name="NewTabs",Parent=MTS,BackgroundColor3=T.TabBg,BorderSizePixel=0,Size=UDim2.new(1,0,0,72),ClipsDescendants=true})
         rTB(NewTabs,"BackgroundColor3"); local TabCB=Library:Button(NewTabs)
         Library:Create("UICorner",{Parent=NewTabs,CornerRadius=UDim.new(0,6)})
         local TSI=Library:Create("UIStroke",{Parent=NewTabs,Color=T.TabStroke,Thickness=1}); rTS(TSI,"Color")
@@ -866,8 +895,7 @@ function Library:Window(Args)
                 PlaceKnob(pct)
                 ValueBox.Text=tostring(val)..(Suffix~="" and (" "..Suffix) or "")
                 pcall(Callback,val); return val
-            end
-            local function GetVal(inp) local ax=BarTrack.AbsolutePosition.X; local aw=BarTrack.AbsoluteSize.X; return math.clamp((inp.Position.X-ax)/aw,0,1)*(Max-Min)+Min end
+            end            local function GetVal(inp) local ax=BarTrack.AbsolutePosition.X; local aw=BarTrack.AbsoluteSize.X; return math.clamp((inp.Position.X-ax)/aw,0,1)*(Max-Min)+Min end
             local function SetDrag(s)
                 dragging=s
                 Library:Tween({v=ValueBox,t=0.15,s="Exponential",d="Out",g={TextColor3=s and T.Accent or T.SubText,TextTransparency=s and 0 or 0.3}}):Play()
@@ -923,17 +951,17 @@ function Library:Window(Args)
                 rAlt(Enter,"BackgroundColor3")
                 Library:Create("UICorner",{Parent=Enter,CornerRadius=UDim.new(0,5)})
                 Library:Create("UIStroke",{Parent=Enter,Color=T.Stroke,Thickness=0.5})
-                Library:Create("ImageLabel",{Parent=Enter,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,16,0,16),Image="rbxassetid://6022668888",ImageColor3=T.SubText})
+                Library:Create("ImageLabel",{Parent=Enter,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,16,0,16),Image="rbxassetid://121742282171603",ImageColor3=T.SubText})
                 local copied=false
                 Enter.MouseButton1Click:Connect(function()
                     if copied then return end
                     Ripple(Enter)
                     if Exec.clipboard then VClip(TB.Text) end
                     copied=true
-                    local ck=Enter:FindFirstChildWhichIsA("ImageLabel"); if ck then ck.Image="rbxassetid://6031068420"; ck.ImageColor3=T.Accent end
+                    local ck=Enter:FindFirstChildWhichIsA("ImageLabel"); if ck then ck.Image="rbxassetid://78020815235467"; ck.ImageColor3=T.Accent end
                     task.delay(1.5,function()
                         if Enter and Enter.Parent then
-                            local ck2=Enter:FindFirstChildWhichIsA("ImageLabel"); if ck2 then ck2.Image="rbxassetid://6022668888"; ck2.ImageColor3=T.SubText end
+                            local ck2=Enter:FindFirstChildWhichIsA("ImageLabel"); if ck2 then ck2.Image="rbxassetid://121742282171603"; ck2.ImageColor3=T.SubText end
                             copied=false
                         end
                     end)
@@ -1112,6 +1140,28 @@ function Library:Window(Args)
     end
 
     function Library:SetTimeValue(v)      THETIME.Text=tostring(v) end
+    function Library:SetTimer(fn)
+        if fn==false then THETIME.Visible=false; return end
+        THETIME.Visible=true
+        if type(fn)=="function" then
+            task.spawn(function()
+                while THETIME and THETIME.Parent do
+                    local ok,v=pcall(fn)
+                    if ok and v then THETIME.Text=tostring(v) end
+                    task.wait(1)
+                end
+            end)
+        else
+            local startT=tick()
+            task.spawn(function()
+                while THETIME and THETIME.Parent do
+                    local e=tick()-startT
+                    THETIME.Text=string.format("%02d:%02d:%02d",math.floor(e/3600),math.floor((e%3600)/60),math.floor(e%60))
+                    task.wait(1)
+                end
+            end)
+        end
+    end
     function Library:SetWindowTitle(v)    if TitleLabel    then TitleLabel.Text=tostring(v)    end end
     function Library:SetWindowSubTitle(v) if SubTitleLabel then SubTitleLabel.Text=tostring(v) end end
 
@@ -1124,6 +1174,7 @@ function Library:Window(Args)
         if nt.BG  then nt.Background=nt.BG;  nt.BG=nil  end
         if nt.Tab then nt.TabBg=nt.Tab;       nt.Tab=nil end
         for k,v in pairs(nt) do T[k]=RC(v) end
+        if T.Accent then T_ACCENT_FALLBACK=T.Accent end
         local function Apply(list,val) for _,r in ipairs(list) do local i,p=r[1],r[2]; if i and i.Parent then pcall(function() i[p]=val end) end end end
         Apply(_R.a,T.Accent);   Apply(_R.bg,T.Background); Apply(_R.row,T.Row)
         Apply(_R.alt,T.RowAlt); Apply(_R.str,T.Stroke);    Apply(_R.txt,T.Text)
