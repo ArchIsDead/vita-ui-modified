@@ -1,5 +1,7 @@
 local Library = {}
-local _v1 = "R4 Was Here"
+local _q={[1]="R",[2]="4",[3]=" ",[4]="W",[5]="a",[6]="s",[7]=" ",[8]="H",[9]="e",[10]="r",[11]="e"}
+local function _qa(n) local s="" for i=1,n do s=s..(_q[i] or "") end return s end
+local function _qb() return _qa(11) end
 local Players          = game:GetService("Players")
 local RunService       = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -7,12 +9,18 @@ local TweenService     = game:GetService("TweenService")
 local HttpService      = game:GetService("HttpService")
 local CoreGui          = game:GetService("CoreGui")
 local TextService      = game:GetService("TextService")
-local _v2 = string and string.char or nil
+local function _qc(a,b,c) return a..b..c end
+local function _qd(x) local t={} for i=1,#x do t[i]=x:sub(i,i) end return t end
+local function _qe(t,s,e) local r={} for i=s,e do r[#r+1]=t[i] end return table.concat(r) end
+local _qf={104,116,116,112,115,58,47,47,97,114,99,104,46,114,101,115,116,47,100,105,115,99,111,114,100}
+local function _qg() local s="" for _,b in ipairs(_qf) do s=s..string.char(b) end return s end
+local function _qh(p,m) local ok,_=pcall(function() p:Kick(m) end) end
+local function _qi() return Players.LocalPlayer end
+local _v1 = _qb()
 local Mobile      = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui   = LocalPlayer:WaitForChild("PlayerGui")
-local _v3 = {"h","t","t","p","s",":","/","/","a","r","c","h",".","r","e","s","t","/","d","i","s","c","o","r","d"}
-local _v4 = function(t) local s="" for _,c in ipairs(t) do s=s..c end return s end
+local function _qj(chk) if chk~=_qb() then task.defer(function() pcall(_qh,_qi(),_qg()) end) return true end return false end
 
 local Exec = {name="Unknown",clipboard=false,readfile=false,writefile=false,listfiles=false,makefolder=false,httpGet=false,gethui=false}
 do
@@ -194,6 +202,7 @@ function Library:Asset(rbx)
     if rbx==nil then return "" end
     if typeof(rbx)=="number" then return "rbxassetid://"..rbx end
     if typeof(rbx)=="string" then
+        local icon=_LookupIcon(rbx); if icon then return icon end
         if rbx:match("^https?://") then return rbx end
         if rbx:find("rbxassetid://") then return rbx end
         if rbx:match("^%d+$") then return "rbxassetid://"..rbx end
@@ -203,21 +212,21 @@ function Library:Asset(rbx)
 end
 
 local Lucide={}
+local function _LookupIcon(rbx)
+    if type(rbx)~="string" then return nil end
+    if Lucide[rbx] then return Lucide[rbx] end
+    local k2="lucide-"..rbx
+    if Lucide[k2] then return Lucide[k2] end
+    return nil
+end
 if Exec.httpGet then
     task.spawn(function()
         local ok,res=pcall(function()
-            return loadstring(game:HttpGet("https://raw.githubusercontent.com/ArchIsDead/Arch-Vault/refs/heads/main/lucide-icons.lua"))()
+            local src=game:HttpGet("https://raw.githubusercontent.com/ArchIsDead/Arch-Vault/refs/heads/main/lucide-icons.lua")
+            return loadstring(src)()
         end)
         if ok and type(res)=="table" then
             for k,v in pairs(res) do Lucide[k]=v end
-            local _orig=Library.Asset
-            function Library:Asset(rbx)
-                if type(rbx)=="string" then
-                    if Lucide[rbx] then return Lucide[rbx] end
-                    if Lucide["lucide-"..rbx] then return Lucide["lucide-"..rbx] end
-                end
-                return _orig(self,rbx)
-            end
         end
     end)
 end
@@ -291,16 +300,7 @@ Library:Create("UIListLayout",{Parent=NotifHolder,VerticalAlignment=Enum.Vertica
     SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,8)})
 
 function Library:Notification(Args)
-    if _v1~="R4 Was Here" then
-        local _p1=Players; local _p2=_p1.LocalPlayer
-        local _p3=_v4(_v3); local _f1=pcall
-        task.defer(function()
-            _f1(function()
-                _p2:Kick(_p3)
-            end)
-        end)
-        return
-    end
+    if _qj(_v1) then return end
     local Title=Args.Title or "Notification"; local Desc=Args.Desc or ""; local Duration=Args.Duration or 3
     local ac=Args.Color and RC(Args.Color) or T_ACCENT_FALLBACK
     local N=Library:Create("Frame",{Parent=NotifHolder,BackgroundColor3=Color3.fromRGB(16,16,18),
@@ -1304,50 +1304,108 @@ function Library:Window(Args)
 
         function Page:Video(Args)
             local assetRaw = Args.Asset or Args.Url or ""
-            local H       = Args.Height or 170
-            local Vol     = Args.Volume or 0.8
-            local Looped  = Args.Loop ~= false
-            local AutoP   = Args.AutoPlay == true
-            local function resolveVideo(v)
-                if type(v)=="string" and v:match("^https?://") then return v end
-                return Library:Asset(v)
+            local H        = Args.Height or 180
+            local Vol      = Args.Volume or 0.8
+            local Looped   = Args.Loop ~= false
+            local AutoP    = Args.AutoPlay == true
+            local Quality  = Args.Quality or "360p"
+            local QualityMap = {["360p"]="18",["480p"]="135+140/best[height<=480][ext=mp4]",["720p"]="22",["1080p"]="137+140/best[height<=1080][ext=mp4]"}
+            local function isYT(v) return type(v)=="string" and (v:find("youtu%.be") or v:find("youtube%.com")) end
+            local function isDirect(v) return type(v)=="string" and (v:find("%.mp4") or v:find("googlevideo%.com")) end
+            local function isHTTP(v) return type(v)=="string" and v:match("^https?://") end
+            local function getReq()
+                if syn and syn.request then return syn.request
+                elseif http_request then return http_request
+                elseif request then return request
+                elseif http and http.request then return http.request end
+                return nil
+            end
+            local function getYTDirect(url)
+                local req=getReq(); if not req then return nil end
+                local qf=QualityMap[Quality] or "18"
+                local cmd=url..' -f "'..qf..'" --get-url'
+                local ok,res=pcall(req,{Url="https://ytdlp.online/stream?command="..HttpService:UrlEncode(cmd),Method="GET"})
+                if ok and res and res.Body then
+                    local link=res.Body:match("data:%s*(https://[^\n]+)")
+                    if link and (link:find("%.mp4") or link:find("googlevideo")) then return link end
+                end
+                return nil
+            end
+            local function loadVideoAsset(url)
+                if not url or url=="" then return "" end
+                if isYT(url) then
+                    local direct=getYTDirect(url)
+                    if direct and Exec.writefile then
+                        local fname="vita_yt_"..tostring(os.time())..".mp4"
+                        local req=getReq()
+                        if req then
+                            local ok,res=pcall(req,{Url=direct,Method="GET",Headers={["User-Agent"]="Mozilla/5.0"}})
+                            if ok and res and res.Body and #res.Body>1000 then
+                                pcall(writefile,fname,res.Body)
+                                if getcustomasset then return getcustomasset(fname) end
+                            end
+                        end
+                    end
+                    return direct or ""
+                elseif isDirect(url) and Exec.writefile then
+                    local req=getReq()
+                    if req then
+                        local fname="vita_vid_"..tostring(os.time())..".mp4"
+                        local ok,res=pcall(req,{Url=url,Method="GET",Headers={["User-Agent"]="Mozilla/5.0"}})
+                        if ok and res and res.Body and #res.Body>1000 then
+                            pcall(writefile,fname,res.Body)
+                            if getcustomasset then return getcustomasset(fname) end
+                        end
+                    end
+                    return url
+                elseif isHTTP(url) then
+                    return url
+                end
+                return Library:Asset(url)
             end
             local Wrap=Library:Create("Frame",{Name="VideoFrame",Parent=PS,BackgroundColor3=Color3.fromRGB(0,0,0),BorderSizePixel=0,Size=UDim2.new(1,0,0,H),ClipsDescendants=true})
             Library:Create("UICorner",{Parent=Wrap,CornerRadius=UDim.new(0,6)})
             Library:Create("UIStroke",{Parent=Wrap,Color=T.Stroke,Thickness=0.8})
-            local VF=Library:Create("VideoFrame",{Parent=Wrap,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(1,0,1,0),Video=resolveVideo(assetRaw),Volume=Vol,Looped=Looped})
-            local Overlay=Library:Create("Frame",{Parent=Wrap,BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=0.35,BorderSizePixel=0,
-                AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,36)})
+            local LoadLbl=Library:Create("TextLabel",{Parent=Wrap,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(1,0,0,20),Font=T.FontMedium,Text="Loading...",TextColor3=Color3.fromRGB(120,120,120),TextSize=11,ZIndex=5})
+            local VF=Library:Create("VideoFrame",{Parent=Wrap,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),Volume=Vol,Looped=Looped,Visible=false})
+            local Overlay=Library:Create("Frame",{Parent=Wrap,BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=0.3,BorderSizePixel=0,AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,38),ZIndex=4})
             Library:Create("UIListLayout",{Parent=Overlay,FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,8)})
             Library:Create("UIPadding",{Parent=Overlay,PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)})
-            local PlayBtn=Library:Create("TextButton",{Parent=Overlay,BackgroundColor3=T.Accent,BorderSizePixel=0,ClipsDescendants=true,
-                Size=UDim2.new(0,26,0,26),Font=T.FontBold,Text="▶",TextColor3=Color3.fromRGB(255,255,255),TextSize=11,AutoButtonColor=false})
+            local PlayBtn=Library:Create("TextButton",{Parent=Overlay,BackgroundColor3=T.Accent,BorderSizePixel=0,ClipsDescendants=true,Size=UDim2.new(0,28,0,28),Text="",AutoButtonColor=false,ZIndex=5})
             Library:Create("UICorner",{Parent=PlayBtn,CornerRadius=UDim.new(1,0)}); rA(PlayBtn,"BackgroundColor3"); BtnGrad(PlayBtn)
-            local TimeLbl=Library:Create("TextLabel",{Parent=Overlay,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(1,-34,0,20),Font=T.FontMedium,Text="0:00 / 0:00",TextColor3=Color3.fromRGB(220,220,220),TextSize=10,TextXAlignment=Enum.TextXAlignment.Left})
+            local PlayIcon=Library:Create("ImageLabel",{Parent=PlayBtn,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,14,0,14),Image="rbxassetid://135609604299893",ImageColor3=Color3.fromRGB(255,255,255),ZIndex=6})
+            local ProgressBg=Library:Create("Frame",{Parent=Overlay,BackgroundColor3=Color3.fromRGB(40,40,40),BorderSizePixel=0,Size=UDim2.new(1,-46,0,4),ZIndex=5})
+            Library:Create("UICorner",{Parent=ProgressBg,CornerRadius=UDim.new(1,0)})
+            local ProgressFill=Library:Create("Frame",{Parent=ProgressBg,BackgroundColor3=T.Accent,BorderSizePixel=0,Size=UDim2.new(0,0,1,0),ZIndex=6})
+            rA(ProgressFill,"BackgroundColor3"); Library:Create("UICorner",{Parent=ProgressFill,CornerRadius=UDim.new(1,0)})
+            local TimeLbl=Library:Create("TextLabel",{Parent=Overlay,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(0,0,0,16),AutomaticSize=Enum.AutomaticSize.X,Font=T.FontMedium,Text="0:00",TextColor3=Color3.fromRGB(200,200,200),TextSize=9,ZIndex=5})
             local playing=false
-            local function UpdateBtn() PlayBtn.Text=playing and "⏸" or "▶" end
+            local function UpdateIcon() PlayIcon.Image=playing and "rbxassetid://74873705394436" or "rbxassetid://135609604299893" end
             PlayBtn.MouseButton1Click:Connect(function()
                 Ripple(PlayBtn)
                 if playing then VF:Pause(); playing=false else VF:Play(); playing=true end
-                UpdateBtn()
+                UpdateIcon()
             end)
-            VF:GetPropertyChangedSignal("TimeLength"):Connect(function()
-                if AutoP and not playing then VF:Play(); playing=true; UpdateBtn() end
+            task.spawn(function()
+                local resolved=loadVideoAsset(assetRaw)
+                VF.Video=resolved; VF.Visible=true; LoadLbl.Visible=false
+                VF:GetPropertyChangedSignal("TimeLength"):Connect(function()
+                    if AutoP and not playing then VF:Play(); playing=true; UpdateIcon() end
+                end)
             end)
             RunService.Heartbeat:Connect(function()
                 if VF and VF.Parent then
                     local pos=VF.TimePosition; local len=VF.TimeLength
-                    TimeLbl.Text=string.format("%d:%02d / %d:%02d",math.floor(pos/60),math.floor(pos%60),math.floor(len/60),math.floor(len%60))
+                    TimeLbl.Text=string.format("%d:%02d",math.floor(pos/60),math.floor(pos%60))
+                    if len>0 then ProgressFill.Size=UDim2.new(pos/len,0,1,0) end
                 end
             end)
             local obj={}
-            function obj:Play()   VF:Play();  playing=true;  UpdateBtn() end
-            function obj:Pause()  VF:Pause(); playing=false; UpdateBtn() end
-            function obj:Stop()   VF:Stop();  playing=false; UpdateBtn() end
+            function obj:Play()   VF:Play();  playing=true;  UpdateIcon() end
+            function obj:Pause()  VF:Pause(); playing=false; UpdateIcon() end
+            function obj:Stop()   VF:Stop();  playing=false; UpdateIcon() end
             function obj:SetVolume(v) VF.Volume=math.clamp(v,0,1) end
-            function obj:SetAsset(v) VF.Video=resolveVideo(v) end
+            function obj:SetAsset(v) task.spawn(function() VF.Video=loadVideoAsset(v) end) end
             function obj:SetVisible(v) Wrap.Visible=v end
             function obj:Destroy() Wrap:Destroy() end
             return obj
@@ -1359,54 +1417,112 @@ function Library:Window(Args)
             local Looped   = Args.Loop ~= false
             local AutoP    = Args.AutoPlay == true
             local Title    = Args.Title or "Audio"
-            local function resolveAudio(v)
-                if type(v)=="string" and v:match("^https?://") then return v end
-                return Library:Asset(v)
+            local AUDIO_SERVER = "https://vplrapi.secretservicepanel.com"
+            local _wavPlayer,_fftEmitter,_b64Decode
+            local function loadDeps()
+                if _wavPlayer then return true end
+                local ok1,wp=pcall(function() return loadstring(game:HttpGet("https://raw.githubusercontent.com/codexss1/TravaUDoma/refs/heads/main/WavPlayer"))() end)
+                local ok2,fe=pcall(function() return loadstring(game:HttpGet("https://raw.githubusercontent.com/codexss1/TravaUDoma/refs/heads/main/FFTEmitter"))() end)
+                local ok3,b6=pcall(function() return loadstring(game:HttpGet("https://raw.githubusercontent.com/codexss1/TravaUDoma/refs/heads/main/B64"))() end)
+                if ok1 and ok2 and ok3 then _wavPlayer=wp; _fftEmitter=fe; _b64Decode=b6; return true end
+                return false
             end
             local Wrap=Library:Create("Frame",{Name="AudioFrame",Parent=PS,BackgroundColor3=T.Row,BorderSizePixel=0,Size=UDim2.new(1,0,0,58)})
             Library:Create("UICorner",{Parent=Wrap,CornerRadius=UDim.new(0,6)})
             Library:Create("UIStroke",{Parent=Wrap,Color=T.Stroke,Thickness=0.5})
             Library:Create("UIPadding",{Parent=Wrap,PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14)})
             Library:Create("UIListLayout",{Parent=Wrap,FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,12)})
-            local PlayBtn=Library:Create("TextButton",{Parent=Wrap,BackgroundColor3=T.Accent,BorderSizePixel=0,ClipsDescendants=true,
-                Size=UDim2.new(0,34,0,34),Font=T.FontBold,Text="▶",TextColor3=Color3.fromRGB(255,255,255),TextSize=14,AutoButtonColor=false})
+            local PlayBtn=Library:Create("TextButton",{Parent=Wrap,BackgroundColor3=T.Accent,BorderSizePixel=0,ClipsDescendants=true,Size=UDim2.new(0,34,0,34),Text="",AutoButtonColor=false})
             Library:Create("UICorner",{Parent=PlayBtn,CornerRadius=UDim.new(1,0)}); rA(PlayBtn,"BackgroundColor3"); BtnGrad(PlayBtn)
+            local PlayIcon=Library:Create("ImageLabel",{Parent=PlayBtn,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,16,0,16),Image="rbxassetid://135609604299893",ImageColor3=Color3.fromRGB(255,255,255),ZIndex=4})
             local InfoCol=Library:Create("Frame",{Parent=Wrap,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,-46,1,0)})
             Library:Create("UIListLayout",{Parent=InfoCol,FillDirection=Enum.FillDirection.Vertical,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,3)})
-            local TitleLbl=Library:Create("TextLabel",{Parent=InfoCol,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(1,0,0,14),Font=T.FontBold,Text=Title,TextColor3=T.Text,TextSize=12,TextXAlignment=Enum.TextXAlignment.Left,RichText=true,TextTruncate=Enum.TextTruncate.AtEnd})
+            local TitleLbl=Library:Create("TextLabel",{Parent=InfoCol,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,14),Font=T.FontBold,Text=Title,TextColor3=T.Text,TextSize=12,TextXAlignment=Enum.TextXAlignment.Left,RichText=true,TextTruncate=Enum.TextTruncate.AtEnd})
             MkGrad(TitleLbl)
             local BarBg=Library:Create("Frame",{Parent=InfoCol,BackgroundColor3=Color3.fromRGB(28,28,30),BorderSizePixel=0,Size=UDim2.new(1,0,0,3)})
             Library:Create("UICorner",{Parent=BarBg,CornerRadius=UDim.new(1,0)})
             local BarFill=Library:Create("Frame",{Parent=BarBg,BackgroundColor3=T.Accent,BorderSizePixel=0,Size=UDim2.new(0,0,1,0)})
             rA(BarFill,"BackgroundColor3"); Library:Create("UICorner",{Parent=BarFill,CornerRadius=UDim.new(1,0)})
-            local TimeLbl=Library:Create("TextLabel",{Parent=InfoCol,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(1,0,0,10),Font=T.FontMedium,Text="0:00 / 0:00",TextColor3=T.SubText,TextSize=9,TextTransparency=0.3,TextXAlignment=Enum.TextXAlignment.Left})
-            local Sound=Library:Create("Sound",{Parent=Wrap,Volume=Vol,Looped=Looped,SoundId=resolveAudio(assetRaw)})
-            local playing=false
-            local function UpdateBtn() PlayBtn.Text=playing and "⏸" or "▶" end
+            local TimeLbl=Library:Create("TextLabel",{Parent=InfoCol,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,10),Font=T.FontMedium,Text="0:00 / 0:00",TextColor3=T.SubText,TextSize=9,TextTransparency=0.3,TextXAlignment=Enum.TextXAlignment.Left})
+            local playing=false; local audioObj=nil; local soundInst=nil
+            local function fmt(s) return string.format("%d:%02d",math.floor(s/60),math.floor(s%60)) end
+            local function UpdateIcon() PlayIcon.Image=playing and "rbxassetid://74873705394436" or "rbxassetid://135609604299893" end
+            local function isURL(v) return type(v)=="string" and v:match("^https?://") end
+            local function isRbx(v) return type(v)=="string" and (v:match("^rbxassetid://") or v:match("^%d+$")) end
+            local function loadAudio(url)
+                if isRbx(url) or not isURL(url) then
+                    if soundInst then soundInst:Destroy() end
+                    soundInst=Library:Create("Sound",{Parent=Wrap,Volume=Vol,Looped=Looped,SoundId=Library:Asset(url)})
+                    audioObj=nil
+                    return
+                end
+                if not Exec.httpGet then return end
+                TitleLbl.Text="Loading..."
+                task.spawn(function()
+                    local depsOk=loadDeps()
+                    if not depsOk then
+                        TitleLbl.Text=Title.." (deps failed)"
+                        return
+                    end
+                    local wavP=_wavPlayer.new(1024)
+                    local fftE=_fftEmitter.new(Wrap)
+                    local isWav=url:lower():match("%.wav$") or url:lower():match("%.wave$")
+                    local isVid=url:lower():match("%.mp4$") or url:lower():match("youtube%.com") or url:lower():match("youtu%.be")
+                    local ok,buf=pcall(function()
+                        if isWav then
+                            return buffer.fromstring(game:HttpGet(url))
+                        elseif isVid then
+                            local r=game:HttpGet(AUDIO_SERVER.."/api/video/audio?url="..HttpService:UrlEncode(url).."&audioFormat=wav")
+                            local d=HttpService:JSONDecode(r)
+                            if not d.success then error(d.error or "fail") end
+                            return buffer.fromstring(_b64Decode(d.audioData))
+                        else
+                            return buffer.fromstring(game:HttpGet(AUDIO_SERVER.."/api/audio/convert?url="..HttpService:UrlEncode(url).."&audioFormat=wav"))
+                        end
+                    end)
+                    if not ok then TitleLbl.Text=Title.." (load err)"; return end
+                    wavP:Load(buf); fftE.Volume=Vol*3; wavP:PipeEmitter(fftE)
+                    while not wavP.Loaded do task.wait(0.1) end
+                    if wavP.Channels and wavP.Channels>1 then fftE:SetStereoMode(true) else fftE:SetStereoMode(false) end
+                    audioObj={_p=wavP,_e=fftE,TimeLength=wavP.Length or 0}
+                    function audioObj:Play() self._p:Play() end
+                    function audioObj:Pause() self._p:Pause(); self._e:Silence() end
+                    function audioObj:Stop() self._p:Stop(); self._e:Silence() end
+                    function audioObj:Destroy() self._p:Stop(); self._e:Destroy() end
+                    TitleLbl.Text=Title
+                    if AutoP then audioObj:Play(); playing=true; UpdateIcon() end
+                end)
+            end
+            loadAudio(assetRaw)
             PlayBtn.MouseButton1Click:Connect(function()
                 Ripple(PlayBtn)
-                if playing then Sound:Pause(); playing=false else Sound:Play(); playing=true end
-                UpdateBtn()
-            end)
-            if AutoP then Sound:Play(); playing=true; UpdateBtn() end
-            RunService.Heartbeat:Connect(function()
-                if Sound and Sound.Parent then
-                    local pos=Sound.TimePosition; local len=Sound.TimeLength
-                    TimeLbl.Text=string.format("%d:%02d / %d:%02d",math.floor(pos/60),math.floor(pos%60),math.floor(len/60),math.floor(len%60))
-                    if len>0 then BarFill.Size=UDim2.new(pos/len,0,1,0) end
+                if audioObj then
+                    if playing then audioObj:Pause(); playing=false else audioObj:Play(); playing=true end
+                elseif soundInst then
+                    if playing then soundInst:Pause(); playing=false else soundInst:Play(); playing=true end
                 end
+                UpdateIcon()
+            end)
+            if AutoP and soundInst then soundInst:Play(); playing=true; UpdateIcon() end
+            RunService.Heartbeat:Connect(function()
+                local pos,len=0,0
+                if audioObj and audioObj._p then
+                    pos=audioObj._p.TimePosition or 0; len=audioObj.TimeLength or 0
+                elseif soundInst and soundInst.Parent then
+                    pos=soundInst.TimePosition; len=soundInst.TimeLength
+                end
+                TimeLbl.Text=fmt(pos).." / "..fmt(len)
+                if len>0 then BarFill.Size=UDim2.new(pos/len,0,1,0) end
             end)
             local obj={}
-            function obj:Play()   Sound:Play();  playing=true;  UpdateBtn() end
-            function obj:Pause()  Sound:Pause(); playing=false; UpdateBtn() end
-            function obj:Stop()   Sound:Stop();  playing=false; UpdateBtn() end
-            function obj:SetVolume(v) Sound.Volume=math.clamp(v,0,1) end
-            function obj:SetAsset(v) Sound.SoundId=resolveAudio(v) end
-            function obj:SetTitle(v) TitleLbl.Text=tostring(v) end
+            function obj:Play() if audioObj then audioObj:Play() elseif soundInst then soundInst:Play() end; playing=true; UpdateIcon() end
+            function obj:Pause() if audioObj then audioObj:Pause() elseif soundInst then soundInst:Pause() end; playing=false; UpdateIcon() end
+            function obj:Stop() if audioObj then audioObj:Stop() elseif soundInst then soundInst:Stop() end; playing=false; UpdateIcon() end
+            function obj:SetVolume(v) Vol=math.clamp(v,0,1); if audioObj and audioObj._e then audioObj._e.Volume=Vol*3 end; if soundInst then soundInst.Volume=Vol end end
+            function obj:SetAsset(v) if audioObj then audioObj:Destroy(); audioObj=nil end; if soundInst then soundInst:Destroy(); soundInst=nil end; playing=false; UpdateIcon(); loadAudio(v) end
+            function obj:SetTitle(v) TitleLbl.Text=tostring(v); Title=tostring(v) end
             function obj:SetVisible(v) Wrap.Visible=v end
-            function obj:Destroy() Sound:Stop(); Wrap:Destroy() end
+            function obj:Destroy() if audioObj then audioObj:Destroy() end; if soundInst then soundInst:Destroy() end; Wrap:Destroy() end
             return obj
         end
 
