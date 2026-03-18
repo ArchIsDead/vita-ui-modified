@@ -437,7 +437,7 @@ function Library:Window(Args)
     rA(RetArrow,"ImageColor3")
 
     local TitleBlock=Library:Create("Frame",{Name="TitleBlock",Parent=Header,BackgroundTransparency=1,BorderSizePixel=0,
-        AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,50,0.5,0),Size=UDim2.new(1,-110,0,28)})
+        AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,50,0.5,0),Size=UDim2.new(1,-20,0,28)})
     Library:Create("UIListLayout",{Parent=TitleBlock,SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,0)})
     local TitleLabel
     if Title and Title~="" then
@@ -452,12 +452,12 @@ function Library:Window(Args)
             Size=UDim2.new(1,0,0,10),Font=Enum.Font.GothamMedium,RichText=true,Text=SubTitle,
             TextColor3=T.SubText,TextSize=9,TextTransparency=0.4,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
     end
-    local THETIME=Library:Create("TextLabel",{Name="Time",Parent=Header,BackgroundTransparency=1,BorderSizePixel=0,
-        AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-12,0.5,0),Size=UDim2.new(0,60,0,12),
-        Font=Enum.Font.GothamMedium,Text="",TextColor3=T.SubText,TextSize=10,TextTransparency=0.4,TextXAlignment=Enum.TextXAlignment.Right})
+    local THETIME=Library:Create("TextLabel",{Name="TimerLbl",Parent=TitleBlock,BackgroundTransparency=1,BorderSizePixel=0,
+        Size=UDim2.new(1,0,0,10),Font=Enum.Font.GothamMedium,Text="",TextColor3=T.SubText,
+        TextSize=9,TextTransparency=0.4,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false,Visible=false})
 
     local Scale=Library:Create("Frame",{Name="Scale",Parent=Background,AnchorPoint=Vector2.new(0,1),BackgroundTransparency=1,
-        BorderSizePixel=0,Position=UDim2.new(0,0,1,-12),Size=UDim2.new(1,0,1,-(HDR_H+13)),ClipsDescendants=true})
+        BorderSizePixel=0,Position=UDim2.new(0,0,1,-8),Size=UDim2.new(1,0,1,-(HDR_H+9)),ClipsDescendants=true})
     local Home=Library:Create("Frame",{Name="Home",Parent=Scale,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)})
     local MTS=Library:Create("ScrollingFrame",{Name="TabScrolling",Parent=Home,Active=true,BackgroundTransparency=1,BorderSizePixel=0,
         Size=UDim2.new(1,0,1,0),ClipsDescendants=true,AutomaticCanvasSize=Enum.AutomaticSize.None,
@@ -490,10 +490,10 @@ function Library:Window(Args)
     end)
 
     local MiniBar=Library:Create("Frame",{Name="MiniBar",Parent=Background,BackgroundColor3=T.TabBg,BorderSizePixel=0,
-        AnchorPoint=Vector2.new(0.5,1),Position=UDim2.new(0.5,0,1,0),Size=UDim2.new(1,0,0,12),ZIndex=5})
-    Library:Create("UICorner",{Parent=MiniBar,CornerRadius=UDim.new(0,6)}); rTB(MiniBar,"BackgroundColor3")
+        AnchorPoint=Vector2.new(0.5,1),Position=UDim2.new(0.5,0,1,0),Size=UDim2.new(1,0,0,8),ZIndex=5})
+    Library:Create("UICorner",{Parent=MiniBar,CornerRadius=UDim.new(0,4)}); rTB(MiniBar,"BackgroundColor3")
     local MiniHandle=Library:Create("Frame",{Parent=MiniBar,BackgroundColor3=T.Stroke,BorderSizePixel=0,
-        AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,28,0,2),BackgroundTransparency=0.4})
+        AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,24,0,2),BackgroundTransparency=0.4})
     Library:Create("UICorner",{Parent=MiniHandle,CornerRadius=UDim.new(1,0)})
 
     local ResizeHandle=Library:Create("TextButton",{Name="ResizeHandle",Parent=Background,BackgroundTransparency=1,
@@ -730,14 +730,18 @@ function Library:Window(Args)
 
     function Window:NewPage(Args)
         local PageTitle=Args.Title or "Page"; local PageDesc=Args.Desc or ""
-        local PageIcon=Args.Icon or 127194456372995; local TabImg=Args.TabImage
+        local PageIcon=Args.Icon or 127194456372995
+        local TabImg=Args.TabImage
+        local TabImgColor=Args.TabImageColor
         local NewTabs=Library:Create("Frame",{Name="NewTabs",Parent=MTS,BackgroundColor3=T.TabBg,BorderSizePixel=0,Size=UDim2.new(1,0,0,72),ClipsDescendants=true})
         rTB(NewTabs,"BackgroundColor3"); local TabCB=Library:Button(NewTabs)
         Library:Create("UICorner",{Parent=NewTabs,CornerRadius=UDim.new(0,6)})
         local TSI=Library:Create("UIStroke",{Parent=NewTabs,Color=T.TabStroke,Thickness=1}); rTS(TSI,"Color")
-        local TBC=TabImg and RC(TabImg) or T.TabImage
-        local TabBann=Library:Create("ImageLabel",{Name="Banner",Parent=NewTabs,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),Image="rbxassetid://125411502674016",ImageColor3=TBC,ScaleType=Enum.ScaleType.Crop})
-        if not TabImg then rTI(TabBann,"ImageColor3") end
+        local banImg=TabImg and Library:Asset(TabImg) or "rbxassetid://125411502674016"
+        local banColor=TabImgColor and RC(TabImgColor) or T.TabImage
+        local TabBann=Library:Create("ImageLabel",{Name="Banner",Parent=NewTabs,BackgroundTransparency=1,BorderSizePixel=0,
+            Size=UDim2.new(1,0,1,0),Image=banImg,ImageColor3=banColor,ScaleType=Enum.ScaleType.Crop})
+        if not TabImgColor and not TabImg then rTI(TabBann,"ImageColor3") end
         Library:Create("UICorner",{Parent=TabBann,CornerRadius=UDim.new(0,2)})
         local TabInfo=Library:Create("Frame",{Name="Info",Parent=NewTabs,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)})
         Library:Create("UIListLayout",{Parent=TabInfo,Padding=UDim.new(0,10),FillDirection=Enum.FillDirection.Horizontal,SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center})
@@ -754,11 +758,13 @@ function Library:Window(Args)
             Size=UDim2.new(1,0,1,0),ClipsDescendants=true,AutomaticCanvasSize=Enum.AutomaticSize.None,
             BottomImage="rbxasset://textures/ui/Scroll/scroll-bottom.png",CanvasPosition=Vector2.new(0,0),
             ElasticBehavior=Enum.ElasticBehavior.WhenScrollable,MidImage="rbxasset://textures/ui/Scroll/scroll-middle.png",
-            ScrollBarImageColor3=Color3.fromRGB(0,0,0),ScrollBarThickness=0,ScrollingDirection=Enum.ScrollingDirection.XY,
+            ScrollBarImageColor3=Color3.fromRGB(0,0,0),ScrollBarThickness=0,ScrollingDirection=Enum.ScrollingDirection.Y,
             TopImage="rbxasset://textures/ui/Scroll/scroll-top.png",VerticalScrollBarPosition=Enum.VerticalScrollBarPosition.Right})
-        Library:Create("UIPadding",{Parent=PS,PaddingBottom=UDim.new(0,24),PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14),PaddingTop=UDim.new(0,10)})
+        Library:Create("UIPadding",{Parent=PS,PaddingBottom=UDim.new(0,40),PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14),PaddingTop=UDim.new(0,10)})
         local PL=Library:Create("UIListLayout",{Parent=PS,Padding=UDim.new(0,6),FillDirection=Enum.FillDirection.Vertical,SortOrder=Enum.SortOrder.LayoutOrder})
-        PL:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() PS.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+30) end)
+        PL:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            PS.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+50)
+        end)
         TabCB.MouseButton1Click:Connect(function()
             if _locked then return end
             ReturnBtn.Visible=true; ScriptIconFrame.Visible=false
@@ -768,11 +774,19 @@ function Library:Window(Args)
         local Page={}
 
         local function LockOv(parent,msg)
-            local ov=Library:Create("Frame",{Parent=parent,BackgroundColor3=Color3.fromRGB(8,8,8),BackgroundTransparency=0.18,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=50,Visible=false})
+            local ov=Library:Create("Frame",{Parent=parent,BackgroundColor3=Color3.fromRGB(12,12,14),
+                BackgroundTransparency=0.08,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=50,Visible=false})
             Library:Create("UICorner",{Parent=ov,CornerRadius=UDim.new(0,5)})
-            Library:Create("Frame",{Parent=ov,BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=0.5,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=51})
-            Library:Create("ImageLabel",{Parent=ov,BackgroundTransparency=1,BorderSizePixel=0,AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,-8),Size=UDim2.new(0,16,0,16),Image="rbxassetid://6031135061",ImageColor3=Color3.fromRGB(160,160,160),ZIndex=52})
-            Library:Create("TextLabel",{Parent=ov,BackgroundTransparency=1,BorderSizePixel=0,AnchorPoint=Vector2.new(0.5,0),Position=UDim2.new(0.5,0,0.5,10),Size=UDim2.new(1,-20,0,12),ZIndex=52,Font=Enum.Font.GothamMedium,Text=msg or _lockMsg,TextColor3=Color3.fromRGB(140,140,140),TextSize=10,TextXAlignment=Enum.TextXAlignment.Center,TextWrapped=true})
+            local inner=Library:Create("Frame",{Parent=ov,BackgroundTransparency=1,BorderSizePixel=0,
+                AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),
+                Size=UDim2.new(0,0,0,0),AutomaticSize=Enum.AutomaticSize.XY,ZIndex=51})
+            Library:Create("UIListLayout",{Parent=inner,SortOrder=Enum.SortOrder.LayoutOrder,HorizontalAlignment=Enum.HorizontalAlignment.Center,Padding=UDim.new(0,4)})
+            Library:Create("ImageLabel",{Parent=inner,BackgroundTransparency=1,BorderSizePixel=0,
+                Size=UDim2.new(0,18,0,18),Image="rbxassetid://6031135061",ImageColor3=Color3.fromRGB(180,180,190),ZIndex=52,LayoutOrder=1})
+            Library:Create("TextLabel",{Parent=inner,BackgroundTransparency=1,BorderSizePixel=0,
+                Size=UDim2.new(0,80,0,11),ZIndex=52,LayoutOrder=2,Font=Enum.Font.GothamMedium,
+                Text=msg or _lockMsg,TextColor3=Color3.fromRGB(160,160,170),TextSize=10,
+                TextXAlignment=Enum.TextXAlignment.Center,TextWrapped=true})
             return ov
         end
 
@@ -925,53 +939,75 @@ function Library:Window(Args)
             Library:Create("UICorner",{Parent=Knob,CornerRadius=UDim.new(1,0)}); Library:Create("UIStroke",{Parent=Knob,Color=Color3.fromRGB(160,160,160),Thickness=0.5})
             local dragging=false; local Data={Value=Value}
             local function Round(n,d) return math.floor(n*(10^d)+0.5)/(10^d) end
-            local function PlaceKnob(pct)
+            local function Redraw(pct)
                 local tW=BarTrack.AbsoluteSize.X
-                if tW>0 then
-                    Knob.Position=UDim2.new(0,14+pct*tW,0,35)
-                    Fill.Size=UDim2.new(pct,0,1,0)
-                end
+                if tW<=0 then return end
+                Fill.Size=UDim2.new(pct,0,1,0)
+                Knob.Position=UDim2.new(0,14+pct*tW,0,35)
             end
             local function UpdateSlider(val)
                 val=math.clamp(val,Min,Max); val=Round(val,Rounding); Data.Value=val
                 if SaveKey then Cfg:setval(SaveKey,val) end
                 local pct=(val-Min)/(Max-Min)
-                Fill.Size=UDim2.new(pct,0,1,0)
-                local tW=BarTrack.AbsoluteSize.X
-                if tW>0 then Knob.Position=UDim2.new(0,14+pct*tW,0,35) end
+                Redraw(pct)
                 ValueBox.Text=tostring(val)..(Suffix~="" and (" "..Suffix) or "")
                 pcall(Callback,val); return val
-            end            local function GetVal(inp) local ax=BarTrack.AbsolutePosition.X; local aw=BarTrack.AbsoluteSize.X; return math.clamp((inp.Position.X-ax)/aw,0,1)*(Max-Min)+Min end
+            end
+            local function GetVal(inp)
+                local ax=BarTrack.AbsolutePosition.X; local aw=BarTrack.AbsoluteSize.X
+                if aw<=0 then return Value end
+                return math.clamp((inp.Position.X-ax)/aw,0,1)*(Max-Min)+Min
+            end
             local function SetDrag(s)
                 dragging=s
                 Library:Tween({v=ValueBox,t=0.12,s="Exponential",d="Out",g={TextColor3=s and T.Accent or T.SubText,TextTransparency=s and 0 or 0.3}}):Play()
             end
             local HitBtn=Library:Button(SF); HitBtn.ZIndex=4
-            HitBtn.InputBegan:Connect(function(inp) if _locked or Library:IsDropdownOpen() then return end; if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then SetDrag(true); UpdateSlider(GetVal(inp)) end end)
-            HitBtn.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then SetDrag(false) end end)
-            UserInputService.InputChanged:Connect(function(inp) if Library:IsDropdownOpen() then return end; if dragging and (inp.UserInputType==Enum.UserInputType.MouseMovement or inp.UserInputType==Enum.UserInputType.Touch) then UpdateSlider(GetVal(inp)) end end)
-            ValueBox.Focused:Connect(function() Library:Tween({v=ValueBox,t=0.12,s="Exponential",d="Out",g={TextColor3=T.Accent,TextTransparency=0}}):Play() end)
-            ValueBox.FocusLost:Connect(function() Library:Tween({v=ValueBox,t=0.12,s="Exponential",d="Out",g={TextColor3=T.SubText,TextTransparency=0.3}}):Play(); Value=UpdateSlider(tonumber(ValueBox.Text:match("%-?%d+%.?%d*")) or Value) end)
-            task.spawn(function()
-                local t0=tick()
-                while tick()-t0<5 do
-                    if BarTrack.AbsoluteSize.X>0 then UpdateSlider(Value); break end
-                    RunService.Heartbeat:Wait()
+            HitBtn.InputBegan:Connect(function(inp)
+                if _locked or Library:IsDropdownOpen() then return end
+                if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then
+                    SetDrag(true); UpdateSlider(GetVal(inp))
                 end
             end)
+            HitBtn.InputEnded:Connect(function(inp)
+                if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then SetDrag(false) end
+            end)
+            UserInputService.InputChanged:Connect(function(inp)
+                if Library:IsDropdownOpen() then return end
+                if dragging and (inp.UserInputType==Enum.UserInputType.MouseMovement or inp.UserInputType==Enum.UserInputType.Touch) then UpdateSlider(GetVal(inp)) end
+            end)
+            ValueBox.Focused:Connect(function() Library:Tween({v=ValueBox,t=0.12,s="Exponential",d="Out",g={TextColor3=T.Accent,TextTransparency=0}}):Play() end)
+            ValueBox.FocusLost:Connect(function()
+                Library:Tween({v=ValueBox,t=0.12,s="Exponential",d="Out",g={TextColor3=T.SubText,TextTransparency=0.3}}):Play()
+                Value=UpdateSlider(tonumber(ValueBox.Text:match("%-?%d+%.?%d*")) or Value)
+            end)
             BarTrack:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-                if BarTrack.AbsoluteSize.X>0 then
-                    local pct=(Data.Value-Min)/(Max-Min)
-                    Fill.Size=UDim2.new(pct,0,1,0)
-                    Knob.Position=UDim2.new(0,14+pct*BarTrack.AbsoluteSize.X,0,35)
+                local pct=(Data.Value-Min)/(Max-Min); Redraw(pct)
+            end)
+            task.spawn(function()
+                local t0=tick()
+                while tick()-t0<10 do
+                    RunService.Heartbeat:Wait()
+                    if BarTrack.AbsoluteSize.X>0 then
+                        local pct=(Data.Value-Min)/(Max-Min); Redraw(pct)
+                        break
+                    end
                 end
             end)
             local lov=LockOv(SF,Args.LockMessage); local obj={}
-            function obj:SetTitle(v) TitleLbl.Text=tostring(v) end; function obj:SetValue(v) UpdateSlider(v) end
-            function obj:SetMin(v) Min=v end; function obj:SetMax(v) Max=v end; function obj:GetValue() return Data.Value end
+            function obj:SetTitle(v) TitleLbl.Text=tostring(v) end
+            function obj:SetValue(v) UpdateSlider(v) end
+            function obj:SetMin(v) Min=v end; function obj:SetMax(v) Max=v end
+            function obj:GetValue() return Data.Value end
             function obj:Lock(m) lov.Visible=true; if m then lov:FindFirstChildWhichIsA("TextLabel",true).Text=m end end
             function obj:Unlock() lov.Visible=false end; function obj:Destroy() SF:Destroy() end
-            setmetatable(obj,{__newindex=function(t,k,v) rawset(t,k,v); if k=="Title" then TitleLbl.Text=tostring(v) elseif k=="Value" then UpdateSlider(v) elseif k=="Min" then Min=v elseif k=="Max" then Max=v end end,__index=function(t,k) if k=="Value" then return Data.Value end; return rawget(t,k) end})
+            setmetatable(obj,{
+                __newindex=function(t,k,v) rawset(t,k,v)
+                    if k=="Title" then TitleLbl.Text=tostring(v)
+                    elseif k=="Value" then UpdateSlider(v)
+                    elseif k=="Min" then Min=v
+                    elseif k=="Max" then Max=v end end,
+                __index=function(t,k) if k=="Value" then return Data.Value end; return rawget(t,k) end})
             return obj
         end
 
@@ -1110,28 +1146,11 @@ function Library:Window(Args)
         end
 
         function Page:ColorPicker(Args)
-            local Value=Args.Value or Color3.fromRGB(255,255,255); local Callback=Args.Callback or function()end
-            local SaveKey=Args.save and (Args.Title or tostring(Args.save))
-            if typeof(Value)=="string" then Value=RC(Value) end
-            if SaveKey and Cfg:getval(SaveKey)~=nil then local sv=Cfg:getval(SaveKey); local ok,c=pcall(Library.Hex,Library,sv); if ok then Value=c end end
-            local R=Library:NewRows(PS,Args.Title,nil,T); local Right=R.Right; local Left=R.Left
-            local DescL=Left:FindFirstChild("Desc")
-            if not DescL then DescL=Library:Create("TextLabel",{Name="Desc",Parent=Left,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=2,Size=UDim2.new(1,0,0,11),Font=Enum.Font.GothamMedium,Text="",TextColor3=T.SubText,TextSize=10,TextTransparency=0.3,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false}) end
-            DescL.Visible=true; DescL.Text=string.format("#%02X%02X%02X",math.floor(Value.R*255),math.floor(Value.G*255),math.floor(Value.B*255))
-            local Swatch=Library:Create("Frame",{Name="Swatch",Parent=Right,BackgroundColor3=Value,BorderSizePixel=0,Size=UDim2.new(0,44,0,24)})
-            Library:Create("UICorner",{Parent=Swatch,CornerRadius=UDim.new(0,5)}); Library:Create("UIStroke",{Parent=Swatch,Color=T.Stroke,Thickness=0.5})
-            local SC=Library:Button(Swatch)
-            local PF,getColor,setColorFn=BuildColorPicker(Background,Value,function(c)
-                Value=c; Swatch.BackgroundColor3=c; local hex=string.format("#%02X%02X%02X",math.floor(c.R*255),math.floor(c.G*255),math.floor(c.B*255))
-                DescL.Text=hex; if SaveKey then Cfg:setval(SaveKey,hex) end; pcall(Callback,c)
-            end)
-            SC.MouseButton1Click:Connect(function() if _locked then return end; PF.Visible=not PF.Visible; if PF.Visible then Library:Tween({v=PF,t=0.22,s="Back",d="Out",g={Position=UDim2.new(0.5,0,0.5,0)}}):Play() end end)
-            local lov=LockOv(R.Frame,Args.LockMessage); local obj={}
-            function obj:SetTitle(v) local t=Left:FindFirstChild("Title");if t then t.Text=tostring(v) end end
-            function obj:SetValue(v) if typeof(v)=="string" then v=RC(v) end; Value=v; Swatch.BackgroundColor3=v; setColorFn(v) end
-            function obj:GetValue() return getColor() end
-            function obj:Lock(m) lov.Visible=true; if m then lov:FindFirstChildWhichIsA("TextLabel",true).Text=m end end; function obj:Unlock() lov.Visible=false end; function obj:Destroy() R.Frame:Destroy(); PF:Destroy() end
-            setmetatable(obj,{__newindex=function(t,k,v) rawset(t,k,v); if k=="Value" then if typeof(v)=="string" then v=RC(v) end; Value=v; Swatch.BackgroundColor3=v; setColorFn(v) end end,__index=function(t,k) if k=="Value" then return getColor() end; return rawget(t,k) end})
+            local R=Library:NewRows(PS,Args.Title,Args.Desc,T)
+            local obj={}
+            function obj:SetTitle(v) local t=R.Left:FindFirstChild("Title");if t then t.Text=tostring(v) end end
+            function obj:SetValue(v) end; function obj:GetValue() return Color3.fromRGB(255,255,255) end
+            function obj:Lock(m) end; function obj:Unlock() end; function obj:Destroy() R.Frame:Destroy() end
             return obj
         end
 
@@ -1169,16 +1188,25 @@ function Library:Window(Args)
             Library:Create("UICorner",{Parent=SF,CornerRadius=UDim.new(0,5)}); Library:Create("UIStroke",{Parent=SF,Color=T.Stroke,Thickness=0.5})
             Library:Create("UIPadding",{Parent=SF,PaddingTop=UDim.new(0,10),PaddingBottom=UDim.new(0,10),PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14)})
             Library:Create("UIListLayout",{Parent=SF,FillDirection=Enum.FillDirection.Vertical,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,8)})
-            if MTitle and MTitle~="" then local TL=Library:Create("TextLabel",{Name="Title",Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=1,Size=UDim2.new(1,0,0,14),Font=Enum.Font.GothamSemibold,RichText=true,Text=MTitle,TextColor3=T.Text,TextSize=13,TextXAlignment=Enum.TextXAlignment.Left}); MkGrad(TL) end
-            local BtnRow=Library:Create("Frame",{Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=2,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y})
-            Library:Create("UIListLayout",{Parent=BtnRow,FillDirection=Enum.FillDirection.Horizontal,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,6),VerticalAlignment=Enum.VerticalAlignment.Center,Wraps=true})
+            if MTitle and MTitle~="" then
+                local TL=Library:Create("TextLabel",{Name="Title",Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,
+                    LayoutOrder=1,Size=UDim2.new(1,0,0,14),Font=Enum.Font.GothamSemibold,RichText=true,
+                    Text=MTitle,TextColor3=T.Text,TextSize=13,TextXAlignment=Enum.TextXAlignment.Left})
+                MkGrad(TL)
+            end
+            local BtnRow=Library:Create("Frame",{Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,
+                LayoutOrder=2,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y})
+            Library:Create("UIListLayout",{Parent=BtnRow,FillDirection=Enum.FillDirection.Horizontal,
+                SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,6),VerticalAlignment=Enum.VerticalAlignment.Center,Wraps=true})
+            local ts=game:GetService("TextService")
             for _,bd in ipairs(Buttons) do
+                local label=bd.Text or "Btn"
+                local tw=ts:GetTextSize(label,11,Enum.Font.GothamSemibold,Vector2.new(200,28)).X
+                local btnW=math.clamp(tw+28,48,200)
                 local Btn=Library:Create("TextButton",{Parent=BtnRow,BackgroundColor3=bd.Color and RC(bd.Color) or T.Accent,BorderSizePixel=0,
-                    Size=UDim2.new(0,0,0,28),AutomaticSize=Enum.AutomaticSize.X,Font=Enum.Font.GothamSemibold,Text=bd.Text or "Btn",
+                    Size=UDim2.new(0,btnW,0,28),Font=Enum.Font.GothamSemibold,Text=label,
                     TextColor3=Color3.fromRGB(255,255,255),TextSize=11,ClipsDescendants=true,AutoButtonColor=false})
                 Library:Create("UICorner",{Parent=Btn,CornerRadius=UDim.new(0,5)})
-                Library:Create("UIPadding",{Parent=Btn,PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14)})
-                Library:Create("UISizeConstraint",{Parent=Btn,MinSize=Vector2.new(0,28),MaxSize=Vector2.new(200,28)})
                 if not bd.Color then rA(Btn,"BackgroundColor3") end; BtnGrad(Btn)
                 Btn.MouseButton1Click:Connect(function() if _locked then return end; Ripple(Btn); if bd.Callback then pcall(bd.Callback) end end)
             end
@@ -1194,16 +1222,14 @@ function Library:Window(Args)
         return Page
     end
 
-    function Library:SetTimeValue(v)      THETIME.Text=tostring(v) end
+    function Library:SetTimeValue(v) THETIME.Text=tostring(v); THETIME.Visible=tostring(v)~="" end
     function Library:SetTimer(fn)
-        if fn==false then THETIME.Visible=false; return end
+        if fn==false or fn==nil then THETIME.Visible=false; THETIME.Text=""; return end
         THETIME.Visible=true
         if type(fn)=="function" then
             task.spawn(function()
                 while THETIME and THETIME.Parent do
-                    local ok,v=pcall(fn)
-                    if ok and v then THETIME.Text=tostring(v) end
-                    task.wait(1)
+                    local ok,v=pcall(fn); if ok and v then THETIME.Text=tostring(v) end; task.wait(1)
                 end
             end)
         else
