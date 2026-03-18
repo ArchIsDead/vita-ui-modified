@@ -420,12 +420,11 @@ function Library:Window(Args)
     Library:Create("UICorner",{Parent=Header,CornerRadius=UDim.new(0,8)}); rTB(Header,"BackgroundColor3")
     Library:Create("Frame",{Parent=Header,Name="Div",BackgroundColor3=T.Stroke,BorderSizePixel=0,AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,1)})
 
-    local ScriptIconFrame=Library:Create("Frame",{Parent=Header,BackgroundColor3=T.Accent,BorderSizePixel=0,
+    local ScriptIconFrame=Library:Create("Frame",{Parent=Header,BackgroundTransparency=1,BorderSizePixel=0,
         AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,12,0.5,0),Size=UDim2.new(0,30,0,30)})
-    Library:Create("UICorner",{Parent=ScriptIconFrame,CornerRadius=UDim.new(0,7)}); rA(ScriptIconFrame,"BackgroundColor3")
     Library:Create("ImageLabel",{Parent=ScriptIconFrame,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,
-        BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0.62,0,0.62,0),
-        Image=Library:Asset(BbIcon),ImageColor3=Color3.fromRGB(255,255,255)})
+        BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(1,0,1,0),
+        Image=Library:Asset(BbIcon),ImageColor3=T.Accent})
 
     local ReturnBtn=Library:Create("TextButton",{Name="Return",Parent=Header,BackgroundColor3=T.RowAlt,BorderSizePixel=0,
         AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,9,0.5,0),Size=UDim2.new(0,30,0,30),
@@ -458,7 +457,7 @@ function Library:Window(Args)
         Font=Enum.Font.GothamMedium,Text="",TextColor3=T.SubText,TextSize=10,TextTransparency=0.4,TextXAlignment=Enum.TextXAlignment.Right})
 
     local Scale=Library:Create("Frame",{Name="Scale",Parent=Background,AnchorPoint=Vector2.new(0,1),BackgroundTransparency=1,
-        BorderSizePixel=0,Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,1,-(HDR_H+1)),ClipsDescendants=true})
+        BorderSizePixel=0,Position=UDim2.new(0,0,1,-12),Size=UDim2.new(1,0,1,-(HDR_H+13)),ClipsDescendants=true})
     local Home=Library:Create("Frame",{Name="Home",Parent=Scale,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)})
     Library:Create("UIPadding",{Parent=Home,PaddingBottom=UDim.new(0,14),PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12),PaddingTop=UDim.new(0,10)})
     local MTS=Library:Create("ScrollingFrame",{Name="TabScrolling",Parent=Home,Active=true,BackgroundTransparency=1,BorderSizePixel=0,
@@ -491,10 +490,10 @@ function Library:Window(Args)
     end)
 
     local MiniBar=Library:Create("Frame",{Name="MiniBar",Parent=Background,BackgroundColor3=T.TabBg,BorderSizePixel=0,
-        AnchorPoint=Vector2.new(0.5,1),Position=UDim2.new(0.5,0,1,0),Size=UDim2.new(1,0,0,18),ZIndex=5})
-    Library:Create("UICorner",{Parent=MiniBar,CornerRadius=UDim.new(0,8)}); rTB(MiniBar,"BackgroundColor3")
+        AnchorPoint=Vector2.new(0.5,1),Position=UDim2.new(0.5,0,1,0),Size=UDim2.new(1,0,0,12),ZIndex=5})
+    Library:Create("UICorner",{Parent=MiniBar,CornerRadius=UDim.new(0,6)}); rTB(MiniBar,"BackgroundColor3")
     local MiniHandle=Library:Create("Frame",{Parent=MiniBar,BackgroundColor3=T.Stroke,BorderSizePixel=0,
-        AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,36,0,3),BackgroundTransparency=0.4})
+        AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,28,0,2),BackgroundTransparency=0.4})
     Library:Create("UICorner",{Parent=MiniHandle,CornerRadius=UDim.new(1,0)})
 
     local ResizeHandle=Library:Create("TextButton",{Name="ResizeHandle",Parent=Background,BackgroundTransparency=1,
@@ -540,15 +539,17 @@ function Library:Window(Args)
         Library:Create("UICorner",{Parent=PF,CornerRadius=UDim.new(0,10)})
         Library:Create("UIStroke",{Parent=PF,Color=Color3.fromRGB(50,50,50),Thickness=0.8})
         local SVF=Library:Create("Frame",{Parent=PF,BackgroundColor3=Color3.fromHSV(H,1,1),BorderSizePixel=0,
-            AnchorPoint=Vector2.new(0.5,0),Position=UDim2.new(0.5,0,0,0),Size=UDim2.new(1,0,0,145),ZIndex=601,ClipsDescendants=true})
+            AnchorPoint=Vector2.new(0.5,0),Position=UDim2.new(0.5,0,0,0),Size=UDim2.new(1,0,0,145),ZIndex=601,ClipsDescendants=false})
         Library:Create("UICorner",{Parent=SVF,CornerRadius=UDim.new(0,10)})
-        Library:Create("UIGradient",{Parent=SVF,Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(255,255,255))},
+        local SVFClip=Library:Create("Frame",{Parent=SVF,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=601,ClipsDescendants=true})
+        Library:Create("UICorner",{Parent=SVFClip,CornerRadius=UDim.new(0,10)})
+        Library:Create("UIGradient",{Parent=SVFClip,Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(255,255,255))},
             Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(1,1)}})
-        local BL=Library:Create("Frame",{Parent=SVF,BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=0,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=602})
+        local BL=Library:Create("Frame",{Parent=SVFClip,BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=0,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=602})
         Library:Create("UIGradient",{Parent=BL,Rotation=90,Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(0,0,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,0,0))},
             Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,0)}})
-        local SVC=Library:Create("Frame",{Parent=SVF,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,
-            AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(S,0,1-V,0),Size=UDim2.new(0,16,0,16),ZIndex=604})
+        local SVC=Library:Create("Frame",{Parent=PF,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,
+            AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0,0,0,0),Size=UDim2.new(0,14,0,14),ZIndex=610})
         Library:Create("UICorner",{Parent=SVC,CornerRadius=UDim.new(1,0)})
         Library:Create("UIStroke",{Parent=SVC,Color=Color3.fromRGB(0,0,0),Thickness=2})
         local Bottom=Library:Create("Frame",{Parent=PF,BackgroundTransparency=1,BorderSizePixel=0,
@@ -581,7 +582,10 @@ function Library:Window(Args)
             Font=Enum.Font.GothamBold,Text="✕",TextColor3=Color3.fromRGB(140,140,140),TextSize=13,ZIndex=608,AutoButtonColor=false})
         Library:Create("UICorner",{Parent=CloseCP,CornerRadius=UDim.new(1,0)})
         local function UpdCP()
-            cur=Color3.fromHSV(H,S,V); SVF.BackgroundColor3=Color3.fromHSV(H,1,1); SVC.Position=UDim2.new(S,0,1-V,0)
+            cur=Color3.fromHSV(H,S,V); SVF.BackgroundColor3=Color3.fromHSV(H,1,1)
+            local pfp=PF.AbsolutePosition; local svp=SVF.AbsolutePosition; local svs=SVF.AbsoluteSize
+            local cx=svp.X+S*svs.X-pfp.X; local cy=svp.Y+(1-V)*svs.Y-pfp.Y
+            SVC.Position=UDim2.new(0,cx,0,cy)
             hFill.Size=UDim2.new(H,0,1,0); hFill.BackgroundColor3=Color3.fromHSV(H,1,1); hVL.Text=tostring(math.floor(H*360))
             sFill.Size=UDim2.new(S,0,1,0); sFill.BackgroundColor3=Color3.fromHSV(H,S,1); sVL.Text=tostring(math.floor(S*100)).."%"
             pcall(onChanged,cur)
@@ -589,8 +593,7 @@ function Library:Window(Args)
         local svD,hA,sA=false,false,false
         local SvB=Library:Button(SVF); SvB.ZIndex=603
         SvB.InputBegan:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then svD=true; local p=SVF.AbsolutePosition; local sz=SVF.AbsoluteSize; S=math.clamp((inp.Position.X-p.X)/sz.X,0,1); V=math.clamp(1-(inp.Position.Y-p.Y)/sz.Y,0,1); UpdCP() end end)
-        SvB.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then svD=false end end)
-        local function MkSD(hit,bg2,sa,sv) hit.InputBegan:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then sa(true);sv(math.clamp((inp.Position.X-bg2.AbsolutePosition.X)/bg2.AbsoluteSize.X,0,1));UpdCP() end end); hit.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then sa(false) end end) end
+        SvB.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then svD=false end end)        local function MkSD(hit,bg2,sa,sv) hit.InputBegan:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then sa(true);sv(math.clamp((inp.Position.X-bg2.AbsolutePosition.X)/bg2.AbsoluteSize.X,0,1));UpdCP() end end); hit.InputEnded:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then sa(false) end end) end
         MkSD(hHit,hBg,function(v)hA=v end,function(v)H=v end)
         MkSD(sHit,sBg,function(v)sA=v end,function(v)S=v end)
         UserInputService.InputChanged:Connect(function(inp)
@@ -851,13 +854,16 @@ function Library:Window(Args)
             Library:Create("UICorner",{Parent=Knob,CornerRadius=UDim.new(1,0)}); Library:Create("UIStroke",{Parent=Knob,Color=Color3.fromRGB(160,160,160),Thickness=0.5})
             local dragging=false; local Data={Value=Value}
             local function Round(n,d) return math.floor(n*(10^d)+0.5)/(10^d) end
+            local function PlaceKnob(pct)
+                local tW=BarTrack.AbsoluteSize.X
+                if tW>0 then Knob.Position=UDim2.new(0,14+pct*tW,0,35) end
+            end
             local function UpdateSlider(val)
                 val=math.clamp(val,Min,Max); val=Round(val,Rounding); Data.Value=val
                 if SaveKey then Cfg:setval(SaveKey,val) end
                 local pct=(val-Min)/(Max-Min)
-                Library:Tween({v=Fill,t=0.06,s="Linear",d="Out",g={Size=UDim2.new(pct,0,1,0)}}):Play()
-                local tW=BarTrack.AbsoluteSize.X
-                Library:Tween({v=Knob,t=0.06,s="Linear",d="Out",g={Position=UDim2.new(0,14+pct*tW,0,35)}}):Play()
+                Fill.Size=UDim2.new(pct,0,1,0)
+                PlaceKnob(pct)
                 ValueBox.Text=tostring(val)..(Suffix~="" and (" "..Suffix) or "")
                 pcall(Callback,val); return val
             end
@@ -873,8 +879,10 @@ function Library:Window(Args)
             UserInputService.InputChanged:Connect(function(inp) if Library:IsDropdownOpen() then return end; if dragging and (inp.UserInputType==Enum.UserInputType.MouseMovement or inp.UserInputType==Enum.UserInputType.Touch) then UpdateSlider(GetVal(inp)) end end)
             ValueBox.Focused:Connect(function() Library:Tween({v=ValueBox,t=0.15,s="Exponential",d="Out",g={TextColor3=T.Accent,TextTransparency=0}}):Play() end)
             ValueBox.FocusLost:Connect(function() Library:Tween({v=ValueBox,t=0.15,s="Exponential",d="Out",g={TextColor3=T.SubText,TextTransparency=0.3}}):Play(); Value=UpdateSlider(tonumber(ValueBox.Text:match("%-?%d+%.?%d*")) or Value) end)
-            UpdateSlider(Value)
-            SF:GetPropertyChangedSignal("AbsoluteSize"):Connect(function() local pct=(Data.Value-Min)/(Max-Min); local tW=BarTrack.AbsoluteSize.X; Knob.Position=UDim2.new(0,14+pct*tW,0,35) end)
+            task.defer(function() UpdateSlider(Value) end)
+            BarTrack:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+                local pct=(Data.Value-Min)/(Max-Min); PlaceKnob(pct)
+            end)
             local lov=LockOv(SF,Args.LockMessage); local obj={}
             function obj:SetTitle(v) TitleLbl.Text=tostring(v) end; function obj:SetValue(v) UpdateSlider(v) end
             function obj:SetMin(v) Min=v end; function obj:SetMax(v) Max=v end; function obj:GetValue() return Data.Value end
@@ -911,9 +919,25 @@ function Library:Window(Args)
             local TB=Library:Create("TextBox",{Parent=Front,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),Font=Enum.Font.GothamMedium,PlaceholderColor3=Color3.fromRGB(68,68,68),PlaceholderText=Placeholder,Text=tostring(Value),TextColor3=Color3.fromRGB(200,200,200),TextSize=11,TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Center,TextWrapped=false,ClearTextOnFocus=false})
             TB.FocusLost:Connect(function(e) if e then if not _locked then pcall(Callback,TB.Text); if SaveKey then Cfg:setval(SaveKey,TB.Text) end end; if COS then TB.Text="" end end end)
             if ShowEnter then
-                local Enter=Library:Create("TextButton",{Name="Enter",Parent=IF,BackgroundColor3=T.Accent,BorderSizePixel=0,Size=UDim2.new(0,36,0,36),Font=Enum.Font.GothamBold,Text="↵",TextColor3=Color3.fromRGB(255,255,255),TextSize=14,AutoButtonColor=false,ClipsDescendants=true,LayoutOrder=2})
-                rA(Enter,"BackgroundColor3"); Library:Create("UICorner",{Parent=Enter,CornerRadius=UDim.new(0,5)}); BtnGrad(Enter)
-                Enter.MouseButton1Click:Connect(function() Ripple(Enter); if Exec.clipboard then VClip(TB.Text); Enter.Text="✓"; task.delay(2,function() if Enter and Enter.Parent then Enter.Text="↵" end end) end end)
+                local Enter=Library:Create("TextButton",{Name="Enter",Parent=IF,BackgroundColor3=T.RowAlt,BorderSizePixel=0,Size=UDim2.new(0,36,0,36),Text="",AutoButtonColor=false,ClipsDescendants=true,LayoutOrder=2})
+                rAlt(Enter,"BackgroundColor3")
+                Library:Create("UICorner",{Parent=Enter,CornerRadius=UDim.new(0,5)})
+                Library:Create("UIStroke",{Parent=Enter,Color=T.Stroke,Thickness=0.5})
+                Library:Create("ImageLabel",{Parent=Enter,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,16,0,16),Image="rbxassetid://6022668888",ImageColor3=T.SubText})
+                local copied=false
+                Enter.MouseButton1Click:Connect(function()
+                    if copied then return end
+                    Ripple(Enter)
+                    if Exec.clipboard then VClip(TB.Text) end
+                    copied=true
+                    local ck=Enter:FindFirstChildWhichIsA("ImageLabel"); if ck then ck.Image="rbxassetid://6031068420"; ck.ImageColor3=T.Accent end
+                    task.delay(1.5,function()
+                        if Enter and Enter.Parent then
+                            local ck2=Enter:FindFirstChildWhichIsA("ImageLabel"); if ck2 then ck2.Image="rbxassetid://6022668888"; ck2.ImageColor3=T.SubText end
+                            copied=false
+                        end
+                    end)
+                end)
             end
             local lov=LockOv(IF,Args.LockMessage); local obj={}
             function obj:SetPlaceholder(v) TB.PlaceholderText=tostring(v) end; function obj:SetValue(v) TB.Text=tostring(v) end; function obj:GetValue() return TB.Text end
@@ -1069,7 +1093,9 @@ function Library:Window(Args)
                 local Btn=Library:Create("TextButton",{Parent=BtnRow,BackgroundColor3=bd.Color and RC(bd.Color) or T.Accent,BorderSizePixel=0,
                     Size=UDim2.new(0,0,0,28),AutomaticSize=Enum.AutomaticSize.X,Font=Enum.Font.GothamSemibold,Text=bd.Text or "Btn",
                     TextColor3=Color3.fromRGB(255,255,255),TextSize=11,ClipsDescendants=true,AutoButtonColor=false})
-                Library:Create("UICorner",{Parent=Btn,CornerRadius=UDim.new(0,5)}); Library:Create("UIPadding",{Parent=Btn,PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12)})
+                Library:Create("UICorner",{Parent=Btn,CornerRadius=UDim.new(0,5)})
+                Library:Create("UIPadding",{Parent=Btn,PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14)})
+                Library:Create("UISizeConstraint",{Parent=Btn,MinSize=Vector2.new(0,28),MaxSize=Vector2.new(200,28)})
                 if not bd.Color then rA(Btn,"BackgroundColor3") end; BtnGrad(Btn)
                 Btn.MouseButton1Click:Connect(function() if _locked then return end; Ripple(Btn); if bd.Callback then pcall(bd.Callback) end end)
             end
