@@ -289,22 +289,26 @@ Library:Create("UIListLayout",{Parent=NotifHolder,VerticalAlignment=Enum.Vertica
 function Library:Notification(Args)
     local Title=Args.Title or "Notification"; local Desc=Args.Desc or ""; local Duration=Args.Duration or 3
     local ac=Args.Color and RC(Args.Color) or T_ACCENT_FALLBACK
-    local N=Library:Create("Frame",{Parent=NotifHolder,BackgroundColor3=Color3.fromRGB(14,14,14),
-        BorderSizePixel=0,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,ClipsDescendants=true})
+    local N=Library:Create("Frame",{Parent=NotifHolder,BackgroundColor3=Color3.fromRGB(16,16,18),
+        BorderSizePixel=0,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1})
     Library:Create("UICorner",{Parent=N,CornerRadius=UDim.new(0,8)})
-    Library:Create("UIStroke",{Parent=N,Color=Color3.fromRGB(38,38,38),Thickness=0.7})
-    local Bar=Library:Create("Frame",{Parent=N,BackgroundColor3=ac,BorderSizePixel=0,Position=UDim2.new(0,0,0,0),Size=UDim2.new(0,3,1,0),ZIndex=2})
-    local C=Library:Create("Frame",{Parent=N,BackgroundTransparency=1,Position=UDim2.new(0,11,0,0),Size=UDim2.new(1,-15,1,0),AutomaticSize=Enum.AutomaticSize.Y})
-    Library:Create("UIPadding",{Parent=C,PaddingTop=UDim.new(0,10),PaddingBottom=UDim.new(0,10),PaddingRight=UDim.new(0,6)})
+    Library:Create("UIStroke",{Parent=N,Color=Color3.fromRGB(40,40,44),Thickness=0.8})
+    local Inner=Library:Create("Frame",{Parent=N,BackgroundTransparency=1,BorderSizePixel=0,
+        Size=UDim2.new(1,0,1,0),AutomaticSize=Enum.AutomaticSize.Y})
+    Library:Create("UIListLayout",{Parent=Inner,FillDirection=Enum.FillDirection.Horizontal,SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Top})
+    local Bar=Library:Create("Frame",{Parent=Inner,BackgroundColor3=ac,BorderSizePixel=0,Size=UDim2.new(0,3,0,0),AutomaticSize=Enum.AutomaticSize.Y,LayoutOrder=1})
+    Library:Create("UICorner",{Parent=Bar,CornerRadius=UDim.new(0,8)})
+    local C=Library:Create("Frame",{Parent=Inner,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,-3,1,0),AutomaticSize=Enum.AutomaticSize.Y,LayoutOrder=2})
+    Library:Create("UIPadding",{Parent=C,PaddingTop=UDim.new(0,10),PaddingBottom=UDim.new(0,10),PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)})
     Library:Create("UIListLayout",{Parent=C,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,4)})
     local TR=Library:Create("Frame",{Parent=C,BackgroundTransparency=1,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,LayoutOrder=1})
     Library:Create("UIListLayout",{Parent=TR,FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,6),VerticalAlignment=Enum.VerticalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder})
     if Args.Icon then Library:Create("ImageLabel",{Parent=TR,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(0,14,0,14),LayoutOrder=1,Image=Library:Asset(Args.Icon),ImageColor3=ac}) end
     Library:Create("TextLabel",{Parent=TR,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,-20,0,0),AutomaticSize=Enum.AutomaticSize.Y,LayoutOrder=2,Font=Enum.Font.GothamBold,Text=Title,TextColor3=ac,TextSize=13,TextXAlignment=Enum.TextXAlignment.Left,RichText=true,TextWrapped=true})
     if Desc~="" then
-        Library:Create("TextLabel",{Parent=C,BackgroundTransparency=1,BorderSizePixel=0,AutomaticSize=Enum.AutomaticSize.Y,Size=UDim2.new(1,0,0,0),LayoutOrder=2,Font=Enum.Font.GothamMedium,Text=Desc,TextColor3=Color3.fromRGB(200,200,200),TextSize=11,TextTransparency=0.15,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,RichText=true})
+        Library:Create("TextLabel",{Parent=C,BackgroundTransparency=1,BorderSizePixel=0,AutomaticSize=Enum.AutomaticSize.Y,Size=UDim2.new(1,0,0,0),LayoutOrder=2,Font=Enum.Font.GothamMedium,Text=Desc,TextColor3=Color3.fromRGB(195,195,205),TextSize=11,TextTransparency=0.1,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,RichText=true})
     end
-    local PBg=Library:Create("Frame",{Parent=C,BackgroundColor3=Color3.fromRGB(30,30,30),BorderSizePixel=0,Size=UDim2.new(1,0,0,2),LayoutOrder=3})
+    local PBg=Library:Create("Frame",{Parent=C,BackgroundColor3=Color3.fromRGB(28,28,32),BorderSizePixel=0,Size=UDim2.new(1,0,0,2),LayoutOrder=3})
     Library:Create("UICorner",{Parent=PBg,CornerRadius=UDim.new(1,0)})
     local PFr=Library:Create("Frame",{Parent=PBg,BackgroundColor3=ac,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)})
     Library:Create("UICorner",{Parent=PFr,CornerRadius=UDim.new(1,0)})
@@ -543,11 +547,11 @@ function Library:Window(Args)
         Library:Create("UICorner",{Parent=PHdr,CornerRadius=UDim.new(0,8)})
         Library:Create("Frame",{Parent=PHdr,BackgroundColor3=T.Accent,BorderSizePixel=0,AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,1),ZIndex=803})
         Library:Create("UIPadding",{Parent=PHdr,PaddingLeft=UDim.new(0,16),PaddingRight=UDim.new(0,16)})
-        local PTitleLbl=Library:Create("TextLabel",{Parent=PHdr,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),Font=T.FontBold,Text=PTitle,TextColor3=T.Text,TextSize=14,ZIndex=803,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
+        Library:Create("TextLabel",{Parent=PHdr,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),Font=T.FontBold,Text=PTitle,TextColor3=T.Text,TextSize=14,ZIndex=803,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,RichText=true})
         local PBody=Library:Create("Frame",{Parent=PF,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,ZIndex=802})
         Library:Create("UIPadding",{Parent=PBody,PaddingTop=UDim.new(0,14),PaddingBottom=UDim.new(0,16),PaddingLeft=UDim.new(0,16),PaddingRight=UDim.new(0,16)})
         Library:Create("UIListLayout",{Parent=PBody,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,14)})
-        Library:Create("TextLabel",{Parent=PBody,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,Font=T.FontMedium,Text=PDesc,TextColor3=T.SubText,TextSize=12,ZIndex=803,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
+        Library:Create("TextLabel",{Parent=PBody,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,Font=T.FontMedium,Text=PDesc,TextColor3=T.SubText,TextSize=12,ZIndex=803,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,RichText=true})
         local BR=Library:Create("Frame",{Parent=PBody,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,0,32),ZIndex=802})
         Library:Create("UIListLayout",{Parent=BR,FillDirection=Enum.FillDirection.Horizontal,HorizontalAlignment=Enum.HorizontalAlignment.Right,Padding=UDim.new(0,8),SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center})
         local function Close() pcall(function()PF:Destroy()end); pcall(function()Overlay:Destroy()end) end
@@ -1012,7 +1016,7 @@ function Library:Window(Args)
             local R=Library:NewRows(PS,DTitle,nil,T); local Right=R.Right; local Left=R.Left
             local DescL=Left:FindFirstChild("Desc")
             if not DescL then
-                DescL=Library:Create("TextLabel",{Name="Desc",Parent=Left,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=2,Size=UDim2.new(1,0,0,11),Font=T.FontMedium,Text="",TextColor3=T.SubText,TextSize=10,TextTransparency=0.3,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false})
+                DescL=Library:Create("TextLabel",{Name="Desc",Parent=Left,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=2,Size=UDim2.new(1,0,0,11),Font=T.FontMedium,Text="",TextColor3=T.SubText,TextSize=10,TextTransparency=0.3,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false,RichText=true})
             end
             DescL.Visible=true
             local function GetText()
@@ -1023,41 +1027,57 @@ function Library:Window(Args)
             local DDIcon=Library:Create("ImageLabel",{Parent=Right,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(0,18,0,18),Image="rbxassetid://132291592681506",ImageTransparency=0.5})
             local DDBtn=Library:Button(R.Frame)
             local DF=Library:Create("Frame",{Name="Dropdown",Parent=Background,AnchorPoint=Vector2.new(0.5,0.5),BackgroundColor3=T.DropBg,BorderSizePixel=0,
-                Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,300,0,240),ZIndex=500,Visible=false})
-            Library:Create("UICorner",{Parent=DF,CornerRadius=UDim.new(0,6)})
-            Library:Create("UIStroke",{Parent=DF,Color=T.Stroke,Thickness=0.6})
-            Library:Create("UIListLayout",{Parent=DF,Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder,HorizontalAlignment=Enum.HorizontalAlignment.Center})
-            Library:Create("UIPadding",{Parent=DF,PaddingBottom=UDim.new(0,8),PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8),PaddingTop=UDim.new(0,8)})
-            local DHdr=Library:Create("Frame",{Name="Hdr",Parent=DF,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=-10,Size=UDim2.new(1,0,0,26),ZIndex=500})
-            Library:Create("UIListLayout",{Parent=DHdr,FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,4)})
-            Library:Create("TextLabel",{Name="DTitle",Parent=DHdr,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,-24,1,0),Font=T.FontBold,RichText=true,Text=DTitle or "",TextColor3=T.Accent,TextSize=13,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false,ZIndex=500})
-            local CloseDD=Library:Create("TextButton",{Parent=DHdr,BackgroundColor3=Color3.fromRGB(35,35,38),BorderSizePixel=0,Size=UDim2.new(0,22,0,22),Font=Enum.Font.GothamBold,Text="✕",TextColor3=Color3.fromRGB(140,140,140),TextSize=11,ZIndex=502,AutoButtonColor=false})
-            Library:Create("UICorner",{Parent=CloseDD,CornerRadius=UDim.new(1,0)})
-            local SearchFrame,SearchBox
+                Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,280,0,0),AutomaticSize=Enum.AutomaticSize.Y,ZIndex=500,Visible=false})
+            rB(DF,"BackgroundColor3")
+            Library:Create("UICorner",{Parent=DF,CornerRadius=UDim.new(0,8)})
+            local DFStroke=Library:Create("UIStroke",{Parent=DF,Color=T.Stroke,Thickness=0.8})
+            Library:Create("UIListLayout",{Parent=DF,Padding=UDim.new(0,0),SortOrder=Enum.SortOrder.LayoutOrder})
+            local DFHdr=Library:Create("Frame",{Parent=DF,BackgroundColor3=T.TabBg,BorderSizePixel=0,LayoutOrder=1,Size=UDim2.new(1,0,0,40),ZIndex=501})
+            rTB(DFHdr,"BackgroundColor3")
+            Library:Create("UICorner",{Parent=DFHdr,CornerRadius=UDim.new(0,8)})
+            Library:Create("Frame",{Parent=DFHdr,BackgroundColor3=T.Stroke,BorderSizePixel=0,AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,1),ZIndex=501})
+            Library:Create("UIPadding",{Parent=DFHdr,PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,8)})
+            Library:Create("UIListLayout",{Parent=DFHdr,FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,0)})
+            local DTitleLbl=Library:Create("TextLabel",{Parent=DFHdr,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,-32,1,0),Font=T.FontBold,Text=DTitle or "",TextColor3=T.Text,TextSize=13,ZIndex=501,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=false,RichText=true})
+            local CloseDD=Library:Create("TextButton",{Parent=DFHdr,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(0,32,1,0),Font=T.FontBold,Text="✕",TextColor3=T.SubText,TextSize=12,ZIndex=502,AutoButtonColor=false})
+            local DFBody=Library:Create("Frame",{Parent=DF,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=2,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,ZIndex=500})
+            Library:Create("UIListLayout",{Parent=DFBody,Padding=UDim.new(0,0),SortOrder=Enum.SortOrder.LayoutOrder})
+            Library:Create("UIPadding",{Parent=DFBody,PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8),PaddingBottom=UDim.new(0,8)})
+            local SearchBox
             if ShowSearch then
-                SearchFrame=Library:Create("Frame",{Parent=DF,BackgroundColor3=T.Row,BorderSizePixel=0,LayoutOrder=-9,Size=UDim2.new(1,0,0,28),ZIndex=500})
-                Library:Create("UICorner",{Parent=SearchFrame,CornerRadius=UDim.new(0,4)}); Library:Create("UIStroke",{Parent=SearchFrame,Color=T.Stroke,Thickness=0.5})
-                Library:Create("UIPadding",{Parent=SearchFrame,PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,8)})
-                SearchBox=Library:Create("TextBox",{Parent=SearchFrame,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),Font=T.FontMedium,PlaceholderColor3=Color3.fromRGB(68,68,68),PlaceholderText="Search...",Text="",TextColor3=Color3.fromRGB(200,200,200),TextSize=11,TextXAlignment=Enum.TextXAlignment.Left,ClearTextOnFocus=false,ZIndex=501})
+                local SFrm=Library:Create("Frame",{Parent=DFBody,BackgroundColor3=T.Row,BorderSizePixel=0,LayoutOrder=1,Size=UDim2.new(1,0,0,32),ZIndex=500})
+                Library:Create("UICorner",{Parent=SFrm,CornerRadius=UDim.new(0,5)}); Library:Create("UIStroke",{Parent=SFrm,Color=T.Stroke,Thickness=0.5})
+                Library:Create("UIPadding",{Parent=SFrm,PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,8),PaddingTop=UDim.new(0,0)})
+                Library:Create("Frame",{Parent=DFBody,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=0,Size=UDim2.new(1,0,0,6)})
+                SearchBox=Library:Create("TextBox",{Parent=SFrm,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),Font=T.FontMedium,PlaceholderColor3=T.SubText,PlaceholderText="Search...",Text="",TextColor3=T.Text,TextSize=11,TextXAlignment=Enum.TextXAlignment.Left,ClearTextOnFocus=false,ZIndex=501})
             end
-            local ScrollF=Library:Create("ScrollingFrame",{Parent=DF,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=-8,
-                Size=UDim2.new(1,0,0,160),CanvasSize=UDim2.new(0,0,0,0),AutomaticCanvasSize=Enum.AutomaticSize.Y,
+            local ItemSpacer=Library:Create("Frame",{Parent=DFBody,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=ShowSearch and 2 or 0,Size=UDim2.new(1,0,0,6)})
+            local ItemCont=Library:Create("Frame",{Parent=DFBody,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=ShowSearch and 3 or 1,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y})
+            Library:Create("UIListLayout",{Parent=ItemCont,Padding=UDim.new(0,3),SortOrder=Enum.SortOrder.LayoutOrder})
+            local maxH=160; local Clip=Library:Create("Frame",{Parent=DFBody,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=ShowSearch and 4 or 2,Size=UDim2.new(1,0,0,0),ClipsDescendants=true})
+            local ScrollF=Library:Create("ScrollingFrame",{Parent=DFBody,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=ShowSearch and 4 or 2,
+                Size=UDim2.new(1,0,0,0),CanvasSize=UDim2.new(0,0,0,0),AutomaticCanvasSize=Enum.AutomaticSize.Y,
                 ScrollBarThickness=2,ScrollBarImageColor3=T.Stroke,ScrollingDirection=Enum.ScrollingDirection.Y,
                 BottomImage="rbxasset://textures/ui/Scroll/scroll-bottom.png",
                 MidImage="rbxasset://textures/ui/Scroll/scroll-middle.png",
                 TopImage="rbxasset://textures/ui/Scroll/scroll-top.png",ZIndex=500})
-            local ItemLayout=Library:Create("UIListLayout",{Parent=ScrollF,Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder})
+            local ItemLayout=Library:Create("UIListLayout",{Parent=ScrollF,Padding=UDim.new(0,3),SortOrder=Enum.SortOrder.LayoutOrder})
+            ItemLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                local h=math.min(ItemLayout.AbsoluteContentSize.Y,maxH)
+                ScrollF.Size=UDim2.new(1,0,0,h)
+            end)
             local itemFrames={}
             local function BuildItems(filter)
                 for _,f in ipairs(itemFrames) do f:Destroy() end; itemFrames={}
                 for _,item in ipairs(List) do
-                    if not filter or filter=="" or item:lower():find(filter:lower(),1,true) then
+                    if not filter or filter=="" or tostring(item):lower():find(filter:lower(),1,true) then
                         local isSelected=(IsMulti and type(Value)=="table" and table.find(Value,item)) or (not IsMulti and Value==item)
-                        local IF2=Library:Create("TextButton",{Parent=ScrollF,BackgroundColor3=isSelected and T.Accent or T.Row,BorderSizePixel=0,
-                            Size=UDim2.new(1,0,0,28),Font=T.FontMedium,Text=tostring(item),TextColor3=isSelected and Color3.fromRGB(255,255,255) or T.Text,
-                            TextSize=11,TextXAlignment=Enum.TextXAlignment.Left,AutoButtonColor=false,ClipsDescendants=true,ZIndex=501})
-                        Library:Create("UICorner",{Parent=IF2,CornerRadius=UDim.new(0,4)})
-                        Library:Create("UIPadding",{Parent=IF2,PaddingLeft=UDim.new(0,10)})
+                        local IF2=Library:Create("TextButton",{Parent=ScrollF,BackgroundColor3=isSelected and T.Accent or Color3.fromRGB(0,0,0),BackgroundTransparency=isSelected and 0 or 1,BorderSizePixel=0,
+                            Size=UDim2.new(1,0,0,30),Font=T.FontMedium,Text=tostring(item),TextColor3=isSelected and Color3.fromRGB(255,255,255) or T.Text,
+                            TextSize=11,TextXAlignment=Enum.TextXAlignment.Left,AutoButtonColor=false,ZIndex=501})
+                        Library:Create("UICorner",{Parent=IF2,CornerRadius=UDim.new(0,5)})
+                        Library:Create("UIPadding",{Parent=IF2,PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)})
+                        if isSelected then rA(IF2,"BackgroundColor3") end
                         IF2.MouseButton1Click:Connect(function()
                             if IsMulti then
                                 if type(Value)~="table" then Value={} end
@@ -1076,12 +1096,11 @@ function Library:Window(Args)
                 end
             end
             BuildItems()
-            if SearchBox then
-                SearchBox:GetPropertyChangedSignal("Text"):Connect(function() BuildItems(SearchBox.Text) end)
-            end
+            if SearchBox then SearchBox:GetPropertyChangedSignal("Text"):Connect(function() BuildItems(SearchBox.Text) end) end
             DDBtn.MouseButton1Click:Connect(function()
                 if _locked then return end
                 DF.Visible=not DF.Visible
+                if DF.Visible and SearchBox then SearchBox.Text="" end
             end)
             CloseDD.MouseButton1Click:Connect(function() DF.Visible=false end)
             UserInputService.InputBegan:Connect(function(inp)
@@ -1233,39 +1252,53 @@ function Library:Window(Args)
         end
 
         function Page:Video(Args)
-            local asset   = Args.Asset or Args.Url or ""
-            local H       = Args.Height or 160
-            local Vol     = Args.Volume or 0.5
+            local assetRaw = Args.Asset or Args.Url or ""
+            local H       = Args.Height or 170
+            local Vol     = Args.Volume or 0.8
             local Looped  = Args.Loop ~= false
             local AutoP   = Args.AutoPlay == true
-            local Wrap=Library:Create("Frame",{Name="VideoFrame",Parent=PS,BackgroundColor3=Color3.fromRGB(0,0,0),BorderSizePixel=0,Size=UDim2.new(1,0,0,H)})
-            Library:Create("UICorner",{Parent=Wrap,CornerRadius=UDim.new(0,5)})
-            Library:Create("UIStroke",{Parent=Wrap,Color=T.Stroke,Thickness=0.5})
+            local function resolveVideo(v)
+                if type(v)=="string" and v:match("^https?://") then
+                    if Exec.writefile and Exec.readfile then
+                        local ok,data=pcall(game.HttpGet,game,v)
+                        if ok and data then
+                            local fname="vita_tmp_video.mp4"
+                            pcall(writefile,fname,data)
+                            return "file:///"..fname
+                        end
+                    end
+                    return v
+                end
+                return Library:Asset(v)
+            end
+            local Wrap=Library:Create("Frame",{Name="VideoFrame",Parent=PS,BackgroundColor3=Color3.fromRGB(0,0,0),BorderSizePixel=0,Size=UDim2.new(1,0,0,H),ClipsDescendants=true})
+            Library:Create("UICorner",{Parent=Wrap,CornerRadius=UDim.new(0,6)})
+            Library:Create("UIStroke",{Parent=Wrap,Color=T.Stroke,Thickness=0.8})
             local VF=Library:Create("VideoFrame",{Parent=Wrap,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(1,0,1,-28),Video=Library:Asset(asset),Volume=Vol,Looped=Looped})
-            local CtrlBar=Library:Create("Frame",{Parent=Wrap,BackgroundColor3=Color3.fromRGB(10,10,10),BorderSizePixel=0,
-                AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,28)})
-            Library:Create("UICorner",{Parent=CtrlBar,CornerRadius=UDim.new(0,5)})
-            Library:Create("UIPadding",{Parent=CtrlBar,PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)})
-            Library:Create("UIListLayout",{Parent=CtrlBar,FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,8)})
-            local PlayBtn=Library:Create("TextButton",{Parent=CtrlBar,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(0,20,0,20),Font=T.FontBold,Text="▶",TextColor3=T.Accent,TextSize=12,AutoButtonColor=false})
-            rA(PlayBtn,"TextColor3")
-            local TimeLbl=Library:Create("TextLabel",{Parent=CtrlBar,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(1,-28,0,16),Font=T.FontMedium,Text="0:00",TextColor3=T.SubText,TextSize=10,TextXAlignment=Enum.TextXAlignment.Left})
-            local playing=AutoP
+                Size=UDim2.new(1,0,1,0),Video=resolveVideo(assetRaw),Volume=Vol,Looped=Looped})
+            local Overlay=Library:Create("Frame",{Parent=Wrap,BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=0.35,BorderSizePixel=0,
+                AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,0,1,0),Size=UDim2.new(1,0,0,36)})
+            Library:Create("UIListLayout",{Parent=Overlay,FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,8)})
+            Library:Create("UIPadding",{Parent=Overlay,PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)})
+            local PlayBtn=Library:Create("TextButton",{Parent=Overlay,BackgroundColor3=T.Accent,BorderSizePixel=0,ClipsDescendants=true,
+                Size=UDim2.new(0,26,0,26),Font=T.FontBold,Text="▶",TextColor3=Color3.fromRGB(255,255,255),TextSize=11,AutoButtonColor=false})
+            Library:Create("UICorner",{Parent=PlayBtn,CornerRadius=UDim.new(1,0)}); rA(PlayBtn,"BackgroundColor3"); BtnGrad(PlayBtn)
+            local TimeLbl=Library:Create("TextLabel",{Parent=Overlay,BackgroundTransparency=1,BorderSizePixel=0,
+                Size=UDim2.new(1,-34,0,20),Font=T.FontMedium,Text="0:00 / 0:00",TextColor3=Color3.fromRGB(220,220,220),TextSize=10,TextXAlignment=Enum.TextXAlignment.Left})
+            local playing=false
             local function UpdateBtn() PlayBtn.Text=playing and "⏸" or "▶" end
             PlayBtn.MouseButton1Click:Connect(function()
+                Ripple(PlayBtn)
                 if playing then VF:Pause(); playing=false else VF:Play(); playing=true end
                 UpdateBtn()
             end)
             VF:GetPropertyChangedSignal("TimeLength"):Connect(function()
-                if AutoP then VF:Play(); playing=true; UpdateBtn() end
+                if AutoP and not playing then VF:Play(); playing=true; UpdateBtn() end
             end)
             RunService.Heartbeat:Connect(function()
                 if VF and VF.Parent then
-                    local t=VF.TimePosition
-                    TimeLbl.Text=string.format("%d:%02d",math.floor(t/60),math.floor(t%60))
+                    local pos=VF.TimePosition; local len=VF.TimeLength
+                    TimeLbl.Text=string.format("%d:%02d / %d:%02d",math.floor(pos/60),math.floor(pos%60),math.floor(len/60),math.floor(len%60))
                 end
             end)
             local obj={}
@@ -1273,34 +1306,53 @@ function Library:Window(Args)
             function obj:Pause()  VF:Pause(); playing=false; UpdateBtn() end
             function obj:Stop()   VF:Stop();  playing=false; UpdateBtn() end
             function obj:SetVolume(v) VF.Volume=math.clamp(v,0,1) end
-            function obj:SetAsset(v)  VF.Video=Library:Asset(v) end
+            function obj:SetAsset(v) VF.Video=resolveVideo(v) end
             function obj:SetVisible(v) Wrap.Visible=v end
             function obj:Destroy() Wrap:Destroy() end
             return obj
         end
 
         function Page:Audio(Args)
-            local asset  = Args.Asset or Args.Url or ""
-            local Vol    = Args.Volume or 0.5
-            local Looped = Args.Loop ~= false
-            local AutoP  = Args.AutoPlay == true
-            local Title  = Args.Title or "Audio"
-            local Wrap=Library:Create("Frame",{Name="AudioFrame",Parent=PS,BackgroundColor3=T.Row,BorderSizePixel=0,Size=UDim2.new(1,0,0,52)})
-            Library:Create("UICorner",{Parent=Wrap,CornerRadius=UDim.new(0,5)})
+            local assetRaw = Args.Asset or Args.Url or ""
+            local Vol      = Args.Volume or 0.8
+            local Looped   = Args.Loop ~= false
+            local AutoP    = Args.AutoPlay == true
+            local Title    = Args.Title or "Audio"
+            local function resolveAudio(v)
+                if type(v)=="string" and v:match("^https?://") then
+                    if Exec.writefile and Exec.readfile then
+                        local ok,data=pcall(game.HttpGet,game,v)
+                        if ok and data then
+                            local ext=v:match("%.(%w+)%?") or v:match("%.(%w+)$") or "mp3"
+                            local fname="vita_tmp_audio."..ext
+                            pcall(writefile,fname,data)
+                            return "file:///"..fname
+                        end
+                    end
+                    return v
+                end
+                return Library:Asset(v)
+            end
+            local Wrap=Library:Create("Frame",{Name="AudioFrame",Parent=PS,BackgroundColor3=T.Row,BorderSizePixel=0,Size=UDim2.new(1,0,0,58)})
+            Library:Create("UICorner",{Parent=Wrap,CornerRadius=UDim.new(0,6)})
             Library:Create("UIStroke",{Parent=Wrap,Color=T.Stroke,Thickness=0.5})
-            Library:Create("UIPadding",{Parent=Wrap,PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12)})
-            Library:Create("UIListLayout",{Parent=Wrap,FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,10)})
-            local PlayBtn=Library:Create("TextButton",{Parent=Wrap,BackgroundColor3=T.Accent,BorderSizePixel=0,
-                Size=UDim2.new(0,32,0,32),Font=T.FontBold,Text="▶",TextColor3=Color3.fromRGB(255,255,255),TextSize=13,AutoButtonColor=false,ClipsDescendants=true})
+            Library:Create("UIPadding",{Parent=Wrap,PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14)})
+            Library:Create("UIListLayout",{Parent=Wrap,FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,12)})
+            local PlayBtn=Library:Create("TextButton",{Parent=Wrap,BackgroundColor3=T.Accent,BorderSizePixel=0,ClipsDescendants=true,
+                Size=UDim2.new(0,34,0,34),Font=T.FontBold,Text="▶",TextColor3=Color3.fromRGB(255,255,255),TextSize=14,AutoButtonColor=false})
             Library:Create("UICorner",{Parent=PlayBtn,CornerRadius=UDim.new(1,0)}); rA(PlayBtn,"BackgroundColor3"); BtnGrad(PlayBtn)
-            local InfoCol=Library:Create("Frame",{Parent=Wrap,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,-42,1,0)})
-            Library:Create("UIListLayout",{Parent=InfoCol,FillDirection=Enum.FillDirection.Vertical,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,2)})
+            local InfoCol=Library:Create("Frame",{Parent=Wrap,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,-46,1,0)})
+            Library:Create("UIListLayout",{Parent=InfoCol,FillDirection=Enum.FillDirection.Vertical,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,3)})
             local TitleLbl=Library:Create("TextLabel",{Parent=InfoCol,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(1,0,0,14),Font=T.Font,Text=Title,TextColor3=T.Text,TextSize=12,TextXAlignment=Enum.TextXAlignment.Left,RichText=true})
+                Size=UDim2.new(1,0,0,14),Font=T.FontBold,Text=Title,TextColor3=T.Text,TextSize=12,TextXAlignment=Enum.TextXAlignment.Left,RichText=true,TextTruncate=Enum.TextTruncate.AtEnd})
             MkGrad(TitleLbl)
+            local BarBg=Library:Create("Frame",{Parent=InfoCol,BackgroundColor3=Color3.fromRGB(28,28,30),BorderSizePixel=0,Size=UDim2.new(1,0,0,3)})
+            Library:Create("UICorner",{Parent=BarBg,CornerRadius=UDim.new(1,0)})
+            local BarFill=Library:Create("Frame",{Parent=BarBg,BackgroundColor3=T.Accent,BorderSizePixel=0,Size=UDim2.new(0,0,1,0)})
+            rA(BarFill,"BackgroundColor3"); Library:Create("UICorner",{Parent=BarFill,CornerRadius=UDim.new(1,0)})
             local TimeLbl=Library:Create("TextLabel",{Parent=InfoCol,BackgroundTransparency=1,BorderSizePixel=0,
-                Size=UDim2.new(1,0,0,10),Font=T.FontMedium,Text="0:00 / 0:00",TextColor3=T.SubText,TextSize=9,TextTransparency=0.4,TextXAlignment=Enum.TextXAlignment.Left})
-            local Sound=Library:Create("Sound",{Parent=Wrap,Volume=Vol,Looped=Looped,SoundId=Library:Asset(asset)})
+                Size=UDim2.new(1,0,0,10),Font=T.FontMedium,Text="0:00 / 0:00",TextColor3=T.SubText,TextSize=9,TextTransparency=0.3,TextXAlignment=Enum.TextXAlignment.Left})
+            local Sound=Library:Create("Sound",{Parent=Wrap,Volume=Vol,Looped=Looped,SoundId=resolveAudio(assetRaw)})
             local playing=false
             local function UpdateBtn() PlayBtn.Text=playing and "⏸" or "▶" end
             PlayBtn.MouseButton1Click:Connect(function()
@@ -1311,11 +1363,9 @@ function Library:Window(Args)
             if AutoP then Sound:Play(); playing=true; UpdateBtn() end
             RunService.Heartbeat:Connect(function()
                 if Sound and Sound.Parent then
-                    local pos=Sound.TimePosition
-                    local len=Sound.TimeLength
-                    TimeLbl.Text=string.format("%d:%02d / %d:%02d",
-                        math.floor(pos/60),math.floor(pos%60),
-                        math.floor(len/60),math.floor(len%60))
+                    local pos=Sound.TimePosition; local len=Sound.TimeLength
+                    TimeLbl.Text=string.format("%d:%02d / %d:%02d",math.floor(pos/60),math.floor(pos%60),math.floor(len/60),math.floor(len%60))
+                    if len>0 then BarFill.Size=UDim2.new(pos/len,0,1,0) end
                 end
             end)
             local obj={}
@@ -1323,8 +1373,8 @@ function Library:Window(Args)
             function obj:Pause()  Sound:Pause(); playing=false; UpdateBtn() end
             function obj:Stop()   Sound:Stop();  playing=false; UpdateBtn() end
             function obj:SetVolume(v) Sound.Volume=math.clamp(v,0,1) end
-            function obj:SetAsset(v)  Sound.SoundId=Library:Asset(v) end
-            function obj:SetTitle(v)  TitleLbl.Text=tostring(v) end
+            function obj:SetAsset(v) Sound.SoundId=resolveAudio(v) end
+            function obj:SetTitle(v) TitleLbl.Text=tostring(v) end
             function obj:SetVisible(v) Wrap.Visible=v end
             function obj:Destroy() Sound:Stop(); Wrap:Destroy() end
             return obj
