@@ -198,19 +198,6 @@ function Library:Button(parent)
         Size=UDim2.new(1,0,1,0),Font=Enum.Font.SourceSans,Text="",TextColor3=Color3.fromRGB(0,0,0),TextSize=14,ZIndex=parent.ZIndex+3})
 end
 
-function Library:Asset(rbx)
-    if rbx==nil then return "" end
-    if typeof(rbx)=="number" then return "rbxassetid://"..rbx end
-    if typeof(rbx)=="string" then
-        local icon=_LookupIcon(rbx); if icon then return icon end
-        if rbx:match("^https?://") then return rbx end
-        if rbx:find("rbxassetid://") then return rbx end
-        if rbx:match("^%d+$") then return "rbxassetid://"..rbx end
-        return rbx
-    end
-    return tostring(rbx)
-end
-
 local Lucide={}
 local function _LookupIcon(rbx)
     if type(rbx)~="string" then return nil end
@@ -229,6 +216,19 @@ if Exec.httpGet then
             for k,v in pairs(res) do Lucide[k]=v end
         end
     end)
+end
+
+function Library:Asset(rbx)
+    if rbx==nil then return "" end
+    if typeof(rbx)=="number" then return "rbxassetid://"..rbx end
+    if typeof(rbx)=="string" then
+        local icon=_LookupIcon(rbx); if icon then return icon end
+        if rbx:match("^https?://") then return rbx end
+        if rbx:find("rbxassetid://") then return rbx end
+        if rbx:match("^%d+$") then return "rbxassetid://"..rbx end
+        return rbx
+    end
+    return tostring(rbx)
 end
 
 local function MkGrad(p,r)
