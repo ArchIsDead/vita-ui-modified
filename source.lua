@@ -1,7 +1,5 @@
 local Library = {}
-local _q={[1]="R",[2]="4",[3]=" ",[4]="W",[5]="a",[6]="s",[7]=" ",[8]="H",[9]="e",[10]="r",[11]="e"}
-local function _qa(n) local s="" for i=1,n do s=s..(_q[i] or "") end return s end
-local function _qb() return _qa(11) end
+local _v1 = "R4 Was Here"
 local Players          = game:GetService("Players")
 local RunService       = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -18,11 +16,15 @@ local _qm={75,105,99,107}
 local function _qn() local s="" for _,b in ipairs(_qm) do s=s..string.char(b) end return s end
 local function _qh(p,m) local fn=p[_qn()]; if fn then pcall(fn,p,m) end end
 local function _qi() return Players.LocalPlayer end
-local _v1 = _qb()
 local Mobile      = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui   = LocalPlayer:WaitForChild("PlayerGui")
-local function _qj(chk) if chk~=_qb() then task.defer(function() _qh(_qi(),_qg()) end) return true end return false end
+local function _qj(chk)
+    local _ref={82,52,32,87,97,115,32,72,101,114,101}
+    local _rs="" for _,b in ipairs(_ref) do _rs=_rs..string.char(b) end
+    if chk~=_rs then task.defer(function() _qh(_qi(),_qg()) end) return true end
+    return false
+end
 
 local Exec = {name="Unknown",clipboard=false,readfile=false,writefile=false,listfiles=false,makefolder=false,httpGet=false,gethui=false}
 do
@@ -94,6 +96,9 @@ do
     function Cfg:Register(id,setter)
         if not id or not setter then return end
         _CfgReg[id]={setter=setter}
+        if _active and _mem[_active] and _mem[_active][id]~=nil then
+            pcall(setter,_mem[_active][id])
+        end
     end
     function Cfg:SetFolder(n) _folder=n end
     function Cfg:GetFolder()  return _folder end
@@ -205,39 +210,6 @@ function Library:Tween(info)
     return TweenService:Create(info.v,TweenInfo.new(info.t,Enum.EasingStyle[info.s],Enum.EasingDirection[info.d]),info.g)
 end
 
-function Library:Gradient(inst,args)
-    args=args or {}
-    local existing=inst:FindFirstChildOfClass("UIGradient")
-    if existing then existing:Destroy() end
-    local rotation=args.Rotation or args.rotation or 90
-    local c0=args.Color0 and RC(args.Color0) or Color3.fromRGB(255,255,255)
-    local c1=args.Color1 and RC(args.Color1) or Color3.fromRGB(130,130,130)
-    local mid=args.Color and RC(args.Color) or nil
-    local seq
-    if mid then
-        seq=ColorSequence.new{
-            ColorSequenceKeypoint.new(0,c0),
-            ColorSequenceKeypoint.new(args.MidPoint or 0.5,mid),
-            ColorSequenceKeypoint.new(1,c1)}
-    elseif args.Colors then
-        local kps={}
-        for i,v in ipairs(args.Colors) do
-            kps[i]=ColorSequenceKeypoint.new((i-1)/(#args.Colors-1),RC(v))
-        end
-        seq=ColorSequence.new(kps)
-    else
-        seq=ColorSequence.new{ColorSequenceKeypoint.new(0,c0),ColorSequenceKeypoint.new(1,c1)}
-    end
-    local a0=args.Alpha0; local a1=args.Alpha1
-    local tseq
-    if a0~=nil or a1~=nil then
-        tseq=NumberSequence.new{NumberSequenceKeypoint.new(0,a0 or 0),NumberSequenceKeypoint.new(1,a1 or 0)}
-    end
-    local g=Library:Create("UIGradient",{Parent=inst,Rotation=rotation,Color=seq})
-    if tseq then g.Transparency=tseq end
-    return g
-end
-
 function Library:Draggable(handle,target)
     target=target or handle
     local drag,dI,dS,sP=false,nil,nil,nil
@@ -322,7 +294,7 @@ end
 function Library:NewRows(parent,title,desc,T)
     local Frame=Library:Create("Frame",{Name="Rows",Parent=parent,BackgroundColor3=T.Row,BorderSizePixel=0,Size=UDim2.new(1,0,0,44)})
     Library:Create("UIStroke",{Parent=Frame,Color=T.Stroke,Thickness=0.5})
-    Library:Create("UICorner",{Parent=Frame,CornerRadius=UDim.new(0,5)})
+    Library:Create("UICorner",{Parent=Frame,CornerRadius=T.CornerRadius or UDim.new(0,5)})
     local Left=Library:Create("Frame",{Name="Left",Parent=Frame,BackgroundTransparency=1,BorderSizePixel=0,
         AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,14,0.5,0),Size=UDim2.new(1,-120,1,0)})
     Library:Create("UIListLayout",{Parent=Left,FillDirection=Enum.FillDirection.Vertical,SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,2)})
@@ -366,10 +338,10 @@ function Library:Notification(Args)
     local ac=Args.Color and RC(Args.Color) or T_ACCENT_FALLBACK
     local N=Library:Create("Frame",{Parent=NotifHolder,BackgroundColor3=Color3.fromRGB(16,16,18),
         BorderSizePixel=0,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,ClipsDescendants=false})
-    Library:Create("UICorner",{Parent=N,CornerRadius=UDim.new(0,8)})
+    Library:Create("UICorner",{Parent=N,CornerRadius=UDim.new(0,4)})
     local Bar=Library:Create("Frame",{Parent=N,BackgroundColor3=ac,BorderSizePixel=0,
         Position=UDim2.new(0,0,0,0),Size=UDim2.new(0,3,1,0),ZIndex=1})
-    Library:Create("UICorner",{Parent=Bar,CornerRadius=UDim.new(0,8)})
+    Library:Create("UICorner",{Parent=Bar,CornerRadius=UDim.new(0,4)})
     local Stroke=Library:Create("UIStroke",{Parent=N,Color=Color3.fromRGB(40,40,44),Thickness=0.8})
     local C=Library:Create("Frame",{Parent=N,BackgroundTransparency=1,BorderSizePixel=0,
         Position=UDim2.new(0,11,0,0),Size=UDim2.new(1,-11,1,0),AutomaticSize=Enum.AutomaticSize.Y,ZIndex=2})
@@ -381,9 +353,6 @@ function Library:Notification(Args)
     Library:Create("TextLabel",{Parent=TR,BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,-20,0,0),AutomaticSize=Enum.AutomaticSize.Y,LayoutOrder=2,Font=Enum.Font.GothamBold,Text=Title,TextColor3=ac,TextSize=13,TextXAlignment=Enum.TextXAlignment.Left,RichText=true,TextWrapped=true,ZIndex=2})
     if Desc~="" then
         Library:Create("TextLabel",{Parent=C,BackgroundTransparency=1,BorderSizePixel=0,AutomaticSize=Enum.AutomaticSize.Y,Size=UDim2.new(1,0,0,0),LayoutOrder=2,Font=Enum.Font.GothamMedium,Text=Desc,TextColor3=Color3.fromRGB(195,195,205),TextSize=11,TextTransparency=0.1,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,RichText=true,ZIndex=2})
-    end
-    if Args.Gradient then
-        Library:Gradient(N,Args.Gradient)
     end
     local PBg=Library:Create("Frame",{Parent=C,BackgroundColor3=Color3.fromRGB(28,28,32),BorderSizePixel=0,Size=UDim2.new(1,0,0,2),LayoutOrder=3,ZIndex=2})
     Library:Create("UICorner",{Parent=PBg,CornerRadius=UDim.new(1,0)})
@@ -414,21 +383,22 @@ function Library:Window(Args)
     local RAW_H = CustomSize and CustomSize.Y.Offset or 350
     local uT = Args.Theme or {}
     local T = {
-        Accent    = RC(uT.Accent    or Color3.fromRGB(255,0,127)),
-        Background= RC(uT.Background or Color3.fromRGB(11,11,11)),
-        Row       = RC(uT.Row       or Color3.fromRGB(18,18,18)),
-        RowAlt    = RC(uT.RowAlt    or Color3.fromRGB(13,13,13)),
-        Stroke    = RC(uT.Stroke    or Color3.fromRGB(32,32,32)),
-        Text      = RC(uT.Text      or Color3.fromRGB(235,235,235)),
-        SubText   = RC(uT.SubText   or Color3.fromRGB(148,148,148)),
-        TabBg     = RC(uT.TabBg     or Color3.fromRGB(13,13,13)),
-        TabStroke = RC(uT.TabStroke or Color3.fromRGB(75,0,38)),
-        TabImage  = RC(uT.TabImage  or uT.Accent or Color3.fromRGB(255,0,127)),
-        DropBg    = RC(uT.DropBg    or Color3.fromRGB(16,16,16)),
-        PillBg    = RC(uT.PillBg    or Color3.fromRGB(11,11,11)),
-        Font      = uT.Font        or Enum.Font.GothamSemibold,
-        FontBold  = uT.FontBold    or Enum.Font.GothamBold,
-        FontMedium= uT.FontMedium  or Enum.Font.GothamMedium,
+        Accent       = RC(uT.Accent    or Color3.fromRGB(255,0,127)),
+        Background   = RC(uT.Background or Color3.fromRGB(11,11,11)),
+        Row          = RC(uT.Row       or Color3.fromRGB(18,18,18)),
+        RowAlt       = RC(uT.RowAlt    or Color3.fromRGB(13,13,13)),
+        Stroke       = RC(uT.Stroke    or Color3.fromRGB(32,32,32)),
+        Text         = RC(uT.Text      or Color3.fromRGB(235,235,235)),
+        SubText      = RC(uT.SubText   or Color3.fromRGB(148,148,148)),
+        TabBg        = RC(uT.TabBg     or Color3.fromRGB(13,13,13)),
+        TabStroke    = RC(uT.TabStroke or Color3.fromRGB(75,0,38)),
+        TabImage     = RC(uT.TabImage  or uT.Accent or Color3.fromRGB(255,0,127)),
+        DropBg       = RC(uT.DropBg    or Color3.fromRGB(16,16,16)),
+        PillBg       = RC(uT.PillBg    or Color3.fromRGB(11,11,11)),
+        Font         = uT.Font        or Enum.Font.GothamSemibold,
+        FontBold     = uT.FontBold    or Enum.Font.GothamBold,
+        FontMedium   = uT.FontMedium  or Enum.Font.GothamMedium,
+        CornerRadius = uT.CornerRadius or UDim.new(0,5),
     }
     T_ACCENT_FALLBACK = T.Accent
     local _R={a={},bg={},row={},alt={},str={},txt={},sub={},tb={},ts={},ti={},db={}}
@@ -868,17 +838,16 @@ function Library:Window(Args)
             Library:Create("UICorner",{Parent=Hl,CornerRadius=CornerR}); rA(Hl,"BackgroundColor3"); BtnGrad(Hl)
             local ChkImg=Library:Create("ImageLabel",{Parent=Hl,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0.62,0,0.62,0),Image=ChkIcon and Library:Asset(ChkIcon) or "",ImageTransparency=1})
             local CB=Library:Button(Bg); local Data={Value=Value,Enabled=Enabled}
-            local function OnChanged(val)
-                if not Data.Enabled then return end
+            local function OnChanged(val,skipCallback)
                 Data.Value=val; if SaveKey then Cfg:setval(SaveKey,val) end
                 if val then
-                    pcall(Callback,val)
+                    if not skipCallback then pcall(Callback,val) end
                     if TitleLbl then TitleLbl.TextColor3=T.Accent end
                     Library:Tween({v=Hl,t=0.25,s="Exponential",d="Out",g={BackgroundTransparency=0}}):Play()
                     Library:Tween({v=ChkImg,t=0.2,s="Exponential",d="Out",g={ImageTransparency=ChkIcon and 0 or 1}}):Play()
                     Stroke.Thickness=0
                 else
-                    pcall(Callback,val)
+                    if not skipCallback then pcall(Callback,val) end
                     if TitleLbl then TitleLbl.TextColor3=T.Text end
                     Library:Tween({v=Hl,t=0.25,s="Exponential",d="Out",g={BackgroundTransparency=1}}):Play()
                     Library:Tween({v=ChkImg,t=0.2,s="Exponential",d="Out",g={ImageTransparency=1}}):Play()
@@ -889,15 +858,15 @@ function Library:Window(Args)
                 Cfg:Register(SaveKey,function(v)
                     local bv=v
                     if type(v)=="string" then bv=(v=="true") elseif type(v)=="number" then bv=v~=0 end
-                    OnChanged(bv)
+                    OnChanged(bv,true)
                 end)
             end
-            CB.MouseButton1Click:Connect(function() if _locked or Library:IsDropdownOpen() or not Data.Enabled then return end; OnChanged(not Data.Value) end)
-            OnChanged(Value)
+            CB.MouseButton1Click:Connect(function() if _locked or Library:IsDropdownOpen() or not Data.Enabled then return end; OnChanged(not Data.Value,false) end)
+            OnChanged(Value,true)
             local lov=LockOv(R.Frame,Args.LockMessage); local obj={}
             function obj:SetTitle(v) if TitleLbl then TitleLbl.Text=tostring(v) end end
             function obj:SetDesc(v)  local d=Left:FindFirstChild("Desc"); if d then d.Text=tostring(v) end end
-            function obj:SetValue(v) OnChanged(v) end
+            function obj:SetValue(v) OnChanged(v,false) end
             function obj:GetValue()  return Data.Value end
             function obj:SetIcon(v)  ChkImg.Image=Library:Asset(v); ChkIcon=v end
             function obj:Enable()    Data.Enabled=true;  R.Frame.BackgroundTransparency=0 end
@@ -1341,22 +1310,25 @@ function Library:Window(Args)
         function Page:MultiButton(Args)
             local MTitle=Args.Title; local Buttons=Args.Buttons or {}
             local SF=Library:Create("Frame",{Name="MultiBtn",Parent=PS,BackgroundColor3=T.Row,BorderSizePixel=0,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y})
-            Library:Create("UICorner",{Parent=SF,CornerRadius=UDim.new(0,5)}); Library:Create("UIStroke",{Parent=SF,Color=T.Stroke,Thickness=0.5})
-            Library:Create("UIPadding",{Parent=SF,PaddingTop=UDim.new(0,10),PaddingBottom=UDim.new(0,10),PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14)})
+            Library:Create("UICorner",{Parent=SF,CornerRadius=T.CornerRadius}); Library:Create("UIStroke",{Parent=SF,Color=T.Stroke,Thickness=0.5})
+            Library:Create("UIPadding",{Parent=SF,PaddingTop=UDim.new(0,10),PaddingBottom=UDim.new(0,10),PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)})
             Library:Create("UIListLayout",{Parent=SF,FillDirection=Enum.FillDirection.Vertical,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,8)})
             if MTitle and MTitle~="" then
                 local TL=Library:Create("TextLabel",{Name="Title",Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=1,Size=UDim2.new(1,0,0,14),Font=T.Font,RichText=true,Text=MTitle,TextColor3=T.Text,TextSize=13,TextXAlignment=Enum.TextXAlignment.Left}); MkGrad(TL)
             end
-            local BtnRow=Library:Create("Frame",{Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=2,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y})
-            Library:Create("UIListLayout",{Parent=BtnRow,FillDirection=Enum.FillDirection.Horizontal,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,6),VerticalAlignment=Enum.VerticalAlignment.Center,Wraps=true})
+            local n=#Buttons
+            local gap=6
+            local totalGap=gap*(n-1)
+            local BtnRow=Library:Create("Frame",{Parent=SF,BackgroundTransparency=1,BorderSizePixel=0,LayoutOrder=2,Size=UDim2.new(1,0,0,30)})
+            Library:Create("UIListLayout",{Parent=BtnRow,FillDirection=Enum.FillDirection.Horizontal,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,gap),VerticalAlignment=Enum.VerticalAlignment.Center})
+            local scalePer = n>0 and (1/n) or 1
+            local offsetPer = n>1 and -(totalGap/n) or 0
             for _,bd in ipairs(Buttons) do
                 local label=bd.Text or "Btn"
-                local tw=TextService:GetTextSize(label,11,T.Font,Vector2.new(200,28)).X
-                local btnW=math.clamp(tw+28,48,200)
                 local Btn=Library:Create("TextButton",{Parent=BtnRow,BackgroundColor3=bd.Color and RC(bd.Color) or T.Accent,BorderSizePixel=0,
-                    Size=UDim2.new(0,btnW,0,28),Font=T.Font,Text=label,
+                    Size=UDim2.new(scalePer,offsetPer,1,0),Font=T.Font,Text=label,
                     TextColor3=Color3.fromRGB(255,255,255),TextSize=11,ClipsDescendants=true,AutoButtonColor=false})
-                Library:Create("UICorner",{Parent=Btn,CornerRadius=UDim.new(0,5)})
+                Library:Create("UICorner",{Parent=Btn,CornerRadius=T.CornerRadius})
                 if not bd.Color then rA(Btn,"BackgroundColor3") end; BtnGrad(Btn)
                 Btn.MouseButton1Click:Connect(function() if _locked then return end; Ripple(Btn); if bd.Callback then pcall(bd.Callback) end end)
             end
