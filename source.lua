@@ -1,5 +1,5 @@
 local Library = {}
-local _v1 = "R4 Was Here"
+local _v1 = "4 Was Here"
 local Players          = game:GetService("Players")
 local RunService       = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
