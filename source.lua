@@ -1,4 +1,5 @@
 local Library = {}
+local _v1 = "R4 Was Here"
 local Players          = game:GetService("Players")
 local RunService       = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -382,23 +383,24 @@ function Library:Window(Args)
     local RAW_H = CustomSize and CustomSize.Y.Offset or 350
     local uT = Args.Theme or {}
     local T = {
-        Accent       = RC(uT.Accent    or Color3.fromRGB(255,0,127)),
-        Background   = RC(uT.Background or Color3.fromRGB(11,11,11)),
-        Row          = RC(uT.Row       or Color3.fromRGB(18,18,18)),
-        RowAlt       = RC(uT.RowAlt    or Color3.fromRGB(13,13,13)),
-        Stroke       = RC(uT.Stroke    or Color3.fromRGB(32,32,32)),
-        Text         = RC(uT.Text      or Color3.fromRGB(235,235,235)),
-        SubText      = RC(uT.SubText   or Color3.fromRGB(148,148,148)),
-        TabBg        = RC(uT.TabBg     or Color3.fromRGB(13,13,13)),
-        TabStroke    = RC(uT.TabStroke or Color3.fromRGB(75,0,38)),
-        TabImage     = RC(uT.TabImage  or uT.Accent or Color3.fromRGB(255,0,127)),
-        DropBg       = RC(uT.DropBg    or Color3.fromRGB(16,16,16)),
-        PillBg       = RC(uT.PillBg    or Color3.fromRGB(11,11,11)),
-        Font         = uT.Font        or Enum.Font.GothamSemibold,
-        FontBold     = uT.FontBold    or Enum.Font.GothamBold,
-        FontMedium   = uT.FontMedium  or Enum.Font.GothamMedium,
-        CornerRadius = uT.CornerRadius or UDim.new(0,5),
+        Accent           = RC(uT.Accent    or Color3.fromRGB(255,0,127)),
+        Background       = RC(uT.Background or Color3.fromRGB(11,11,11)),
+        Row              = RC(uT.Row       or Color3.fromRGB(18,18,18)),
+        RowAlt           = RC(uT.RowAlt    or Color3.fromRGB(13,13,13)),
+        Stroke           = RC(uT.Stroke    or Color3.fromRGB(32,32,32)),
+        Text             = RC(uT.Text      or Color3.fromRGB(235,235,235)),
+        SubText          = RC(uT.SubText   or Color3.fromRGB(148,148,148)),
+        TabBg            = RC(uT.TabBg     or Color3.fromRGB(13,13,13)),
+        TabStroke        = RC(uT.TabStroke or Color3.fromRGB(75,0,38)),
+        TabImage         = RC(uT.TabImage  or uT.Accent or Color3.fromRGB(255,0,127)),
+        DropBg           = RC(uT.DropBg    or Color3.fromRGB(16,16,16)),
+        ToggleBg         = RC(uT.ToggleBg  or uT.PillBg or Color3.fromRGB(11,11,11)),
+        Font             = uT.Font        or Enum.Font.GothamSemibold,
+        FontBold         = uT.FontBold    or Enum.Font.GothamBold,
+        FontMedium       = uT.FontMedium  or Enum.Font.GothamMedium,
+        CornerRadius     = uT.CornerRadius or UDim.new(0,5),
     }
+    local ToggleBtnCorner = Args.ToggleBtnCorner or UDim.new(1,0)
     T_ACCENT_FALLBACK = T.Accent
     local _R={a={},bg={},row={},alt={},str={},txt={},sub={},tb={},ts={},ti={},db={}}
     local function rA(i,p)   table.insert(_R.a,  {i,p}); return i end
@@ -512,16 +514,16 @@ function Library:Window(Args)
     Library.PageService=PageService
 
     local ToggleScreen=Library:Create("ScreenGui",{Name="VitaToggle",Parent=Library:Parent(),ZIndexBehavior=Enum.ZIndexBehavior.Global,DisplayOrder=11,IgnoreGuiInset=true,ResetOnSpawn=false})
-    local Pillow=Library:Create("TextButton",{Name="Pillow",Parent=ToggleScreen,BackgroundColor3=T.PillBg,BorderSizePixel=0,
+    local ToggleBtn=Library:Create("TextButton",{Name="ToggleBtn",Parent=ToggleScreen,BackgroundColor3=T.ToggleBg,BorderSizePixel=0,
         Position=UDim2.new(0.06,0,0.15,0),Size=UDim2.new(0,50,0,50),Text="",ClipsDescendants=true,AutoButtonColor=false})
-    rB(Pillow,"BackgroundColor3")
-    Library:Create("UICorner",{Parent=Pillow,CornerRadius=UDim.new(1,0)})
-    Library:Create("UIStroke",{Parent=Pillow,Color=T.Stroke,Thickness=0.7})
-    local PillLogo=Library:Create("ImageLabel",{Name="Logo",Parent=Pillow,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,
+    rB(ToggleBtn,"BackgroundColor3")
+    local ToggleBtnCornerObj=Library:Create("UICorner",{Parent=ToggleBtn,CornerRadius=ToggleBtnCorner})
+    Library:Create("UIStroke",{Parent=ToggleBtn,Color=T.Stroke,Thickness=0.7})
+    local ToggleLogo=Library:Create("ImageLabel",{Name="Logo",Parent=ToggleBtn,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,
         BorderSizePixel=0,Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0.54,0,0.54,0),Image=ToggleIcon,ImageColor3=T.Accent})
-    rA(PillLogo,"ImageColor3")
-    Library:Draggable(Pillow)
-    Pillow.MouseButton1Click:Connect(function() Background.Visible=not Background.Visible end)
+    rA(ToggleLogo,"ImageColor3")
+    Library:Draggable(ToggleBtn)
+    ToggleBtn.MouseButton1Click:Connect(function() Background.Visible=not Background.Visible end)
     UserInputService.InputBegan:Connect(function(inp,proc)
         if proc then return end
         if inp.KeyCode==ToggleKey then Background.Visible=not Background.Visible end
@@ -561,17 +563,16 @@ function Library:Window(Args)
     end
 
     local _locked=false; local _lockMsg="Locked"
-    local TabLockOv=Library:Create("Frame",{Name="TabLock",Parent=Home,BackgroundColor3=Color3.fromRGB(12,12,14),
-        BackgroundTransparency=0.08,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=20,Visible=false})
-    Library:Create("UICorner",{Parent=TabLockOv,CornerRadius=UDim.new(0,5)})
+    local TabLockOv=Library:Create("Frame",{Name="TabLock",Parent=Scale,BackgroundColor3=Color3.fromRGB(10,10,12),
+        BackgroundTransparency=0.06,BorderSizePixel=0,Size=UDim2.new(1,0,1,0),ZIndex=100,Visible=false})
     do
         local inn=Library:Create("Frame",{Parent=TabLockOv,BackgroundTransparency=1,BorderSizePixel=0,
-            AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,0,0,0),AutomaticSize=Enum.AutomaticSize.XY,ZIndex=21})
+            AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,0,0,0),AutomaticSize=Enum.AutomaticSize.XY,ZIndex=101})
         Library:Create("UIListLayout",{Parent=inn,SortOrder=Enum.SortOrder.LayoutOrder,HorizontalAlignment=Enum.HorizontalAlignment.Center,Padding=UDim.new(0,4)})
         Library:Create("ImageLabel",{Parent=inn,BackgroundTransparency=1,BorderSizePixel=0,
-            Size=UDim2.new(0,20,0,20),Image="rbxassetid://134724289526879",ImageColor3=Color3.fromRGB(180,180,190),ZIndex=22,LayoutOrder=1})
+            Size=UDim2.new(0,22,0,22),Image="rbxassetid://134724289526879",ImageColor3=Color3.fromRGB(180,180,190),ZIndex=102,LayoutOrder=1})
         Library:Create("TextLabel",{Parent=inn,BackgroundTransparency=1,BorderSizePixel=0,
-            Size=UDim2.new(0,80,0,11),ZIndex=22,LayoutOrder=2,Font=Enum.Font.GothamMedium,
+            Size=UDim2.new(0,100,0,12),ZIndex=102,LayoutOrder=2,Font=Enum.Font.GothamMedium,
             Text="Locked",TextColor3=Color3.fromRGB(160,160,170),TextSize=10,TextXAlignment=Enum.TextXAlignment.Center,TextWrapped=true})
     end
 
@@ -1383,8 +1384,13 @@ function Library:Window(Args)
     end
 
     function Library:GetTheme()    local c={}; for k,v in pairs(T) do c[k]=v end; return c end
-    function Library:SetToggleIcon(icon) if PillLogo then PillLogo.Image=Library:Asset(icon) end end
-    function Library:SetLockText(msg)  _lockMsg=msg end
+    function Library:SetToggleIcon(icon) if ToggleLogo then ToggleLogo.Image=Library:Asset(icon) end end
+    function Library:SetToggleBtnCorner(udim) if ToggleBtnCornerObj then ToggleBtnCornerObj.CornerRadius=udim end end
+    function Library:SetLockText(msg)
+        _lockMsg=msg
+        local lbl=TabLockOv:FindFirstChildWhichIsA("TextLabel",true)
+        if lbl then lbl.Text=msg end
+    end
     function Library:Lock()
         _locked=true; TabLockOv.Visible=true
         if ReturnBtn.Visible then OnReturn() end
