@@ -1,438 +1,583 @@
 # Modified Vita UI Library
 
-Clean and Sexy.
-
----
-
-## Load
-
+Source:
 ```lua
-local Library = loadstring(game:HttpGet("YOUR_RAW_URL"))()
+local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/ArchIsDead/vita-ui-modified/refs/heads/main/source.lua'))()
 ```
 
 ---
 
-## Window
-
+## Creating a Window
 ```lua
 local Window = Library:Window({
-    Title             = "My Script",
-    SubTitle          = "v1.0",
-    ToggleKey         = Enum.KeyCode.RightControl,
-    BbIcon            = "settings",
-    AutoScale         = true,
-    Scale             = 1.45,
-    Size              = UDim2.new(0, 520, 0, 370),
-    ExecIdentifyShown = true,
-    UserName          = "CustomName",
-    ExecutorName      = "MyExec",
-    Theme = {
-        Accent      = "#FF007F",
-        Background  = "#0D0D0D",
-        Row         = "#0F0F0F",
-        RowAlt      = "#0A0A0A",
-        Stroke      = "#191919",
-        Text        = "#FFFFFF",
-        SubText     = "#A3A3A3",
-        TabBg       = "#0A0A0A",
-        TabStroke   = "#4B0026",
-        TabImage    = "#FF007F",
-        DropBg      = "#121212",
-        DropStroke  = "#1E1E1E",
-        PillBg      = "#0B0B0B",
-    }
+    Title           = "My Script",
+    SubTitle        = "v1.0",
+    ToggleKey       = Enum.KeyCode.RightControl,
+    Icon            = "rbxassetid://...",
+    ToggleIcon      = "rbxassetid://...",
+    ToggleBtnCorner = UDim.new(1, 0),
+    FolderName      = "MyConfigs",
+    AutoLoad        = true,
+    AutoScale       = true,
+    Scale           = 1.45,
+    Theme           = { ... },
 })
 ```
-
-All fields are optional. Title, SubTitle, UserName, ExecutorName can all be nil to hide them.
-
----
-
-## Pages
-
-```lua
-local Page = Window:NewPage({
-    Title    = "Combat",
-    Desc     = "Aimbot settings",
-    Icon     = "sword",
-    TabImage = "#FF0055"
-})
+```
+1.) <String>   Title shown on the left side of the header.
+2.) <String>   Subtitle shown below the title.
+3.) <KeyCode>  Key that toggles the window visibility.
+4.) <String>   Icon shown in the header bar (rbxassetid or Lucide name).
+5.) <String>   Icon on the floating toggle button. Falls back to Icon if not set.
+6.) <UDim>     Corner radius of the toggle button. UDim.new(1,0) = circle, UDim.new(0,0) = square.
+7.) <String>   Folder name for config files on disk.
+8.) <Bool/Fn>  true = auto-load the pinned config on startup. Pass a function to also get a callback: function(name, data).
+9.) <Bool>     Auto-scale the UI based on screen size.
+10.) <Number>  Base scale multiplier.
+11.) <Table>   Theme table (see Themes section).
 ```
 
 ---
 
-## Elements
-
-Every element returns an object with named methods. All `Title`, `Desc`, `Icon` fields are optional.
-
-### Section
-
+## Theme
 ```lua
-Page:Section("Movement")
+Theme = {
+    Accent       = "#FF007F",
+    Background   = "#0B0B0B",
+    Row          = "#121212",
+    RowAlt       = "#0D0D0D",
+    Stroke       = "#202020",
+    Text         = "#EBEBEB",
+    SubText      = "#949494",
+    TabBg        = "#0D0D0D",
+    TabStroke    = "#4B0026",
+    TabImage     = "#FF007F",
+    DropBg       = "#101010",
+    ToggleBg     = "#0B0B0B",
+    Font         = Enum.Font.Gotham,
+    FontBold     = Enum.Font.GothamBold,
+    FontMedium   = Enum.Font.GothamMedium,
+    CornerRadius = UDim.new(0, 5),
+}
+```
+```
+All color values accept "#RRGGBB" hex strings or Color3.
+Font values accept Enum.Font.*
+CornerRadius applies to all element frames and buttons.
+ToggleBg is the background color of the floating toggle button.
 ```
 
 ---
 
-### Paragraph
+## Library Methods
 
+### Changing the Theme
 ```lua
-local P = Page:Paragraph({
-    Title         = "Player Info",
-    Desc          = "Some description",
-    Color         = "#1A1A1A",
-    Image         = "info",
-    ImageSize     = 20,
-    ImageMode     = "beside",
-    Thumbnail     = "rbxassetid://123",
-    ThumbnailSize = 50,
-    Buttons = {
-        { Icon="bird", Title="Fly",  Callback=function() end },
-        { Icon="zap",  Title="Kick", Callback=function() end },
-    },
-    LockMessage = "Premium only"
-})
-
-P:SetTitle("New Title")
-P:SetDesc("New desc")
-P:SetImage("check")
-P:SetThumbnail("rbxassetid://456")
-P:SetColor("#222")
-P:Lock("This is locked")
-P:Unlock()
-P:Destroy()
+Library:SetTheme({ Accent="#0088FF", TabImage="#0088FF", TabStroke="#003366" })
+```
+```
+1.) <Table> Any keys from the Theme table. Only provided keys are updated.
 ```
 
-`ImageMode = "top"` places the image as a banner above the row. Use `TopImageHeight` to control its height.
-
----
-
-### Toggle
-
+### Getting the Current Theme
 ```lua
-local T = Page:Toggle({
-    Title    = "Enable Speed",
-    Desc     = "Walk speed hack",
-    Icon     = "zap",
-    Value    = false,
-    Callback = function(v) print(v) end,
-    LockMessage = "Locked"
-})
-
-T:SetTitle("Speed")
-T:SetDesc("Updated")
-T:SetValue(true)
-T:GetValue()
-T:Lock("Paused")
-T:Unlock()
-T:Destroy()
+local theme = Library:GetTheme()
+```
+```
+Returns a copy of the current theme table.
 ```
 
----
-
-### Button
-
+### Header Text
 ```lua
-local B = Page:Button({
-    Title    = "Teleport",
-    Desc     = "Jumps to waypoint",
-    Text     = "Go",
-    Icon     = "map-pin",
-    Callback = function() end,
-    LockMessage = "Locked"
-})
-
-B:SetTitle("Warp")
-B:SetDesc("Updated")
-B:SetText("Execute")
-B:Lock()
-B:Unlock()
-B:Destroy()
+Library:SetExtraTitle("text")
+Library:SetExtraSubTitle("text")
+Library:SetWindowTitle("text")
+Library:SetWindowSubTitle("text")
+```
+```
+SetExtraTitle / SetExtraSubTitle = right side of the header.
+SetWindowTitle / SetWindowSubTitle = left side (same as Title / SubTitle in the window args).
 ```
 
----
-
-### Slider
-
+### Toggle Button
 ```lua
-local S = Page:Slider({
-    Title    = "Walk Speed",
-    Desc     = "Movement speed",
-    Icon     = "activity",
-    Min      = 0,
-    Max      = 250,
-    Rounding = 1,
-    Value    = 16,
-    Suffix   = "st/s",
-    Callback = function(v) print(v) end,
-    LockMessage = "Locked"
-})
-
-S:SetTitle("Speed")
-S:SetValue(100)
-S:SetMin(0)
-S:SetMax(500)
-S:GetValue()
-S:Lock()
-S:Unlock()
-S:Destroy()
+Library:SetToggleIcon("rbxassetid://...")
+Library:SetToggleBtnCorner(UDim.new(1, 0))
+```
+```
+1.) SetToggleIcon: <String> New icon for the floating toggle button.
+2.) SetToggleBtnCorner: <UDim> Corner radius. UDim.new(1,0) = circle, UDim.new(0,0) = square.
 ```
 
----
-
-### Input
-
+### Scale Slider
 ```lua
-local I = Page:Input({
-    Title         = "Target",
-    Placeholder   = "Enter name...",
-    Icon          = "search",
-    Value         = "",
-    ClearOnSubmit = false,
-    Callback      = function(text) print(text) end,
-    LockMessage   = "Locked"
-})
-
-I:SetValue("Player1")
-I:SetPlaceholder("New hint")
-I:GetValue()
-I:Lock()
-I:Unlock()
-I:Destroy()
+Library:AddSizeSlider(Page)
+```
+```
+1.) <Page> Page to add the scale slider to.
+Adds a slider to the given page that controls the UI scale.
 ```
 
-Multi-line textarea:
-
-```lua
-local TA = Page:Input({
-    Title     = "Notes",
-    MultiLine = true,
-    Lines     = 6,
-    Callback  = function(text) print(text) end
-})
-```
-
----
-
-### Dropdown
-
-```lua
-local D = Page:Dropdown({
-    Title       = "Mode",
-    List        = {"Mode A", "Mode B", "Mode C"},
-    Value       = "Mode A",
-    Icon        = "layers",
-    Placeholder = "Select mode...",
-    Search      = true,
-    Callback    = function(v) print(v) end
-})
-
-D:SetValue("Mode B")
-D:AddList("Mode D")
-D:RemoveItem("Mode A")
-D:SetList({"X","Y","Z"})
-D:SetTitle("New Title")
-D:SetPlaceholder("Pick one...")
-D:GetValue()
-D:Clear()
-D:Close()
-D:Destroy()
-```
-
-Multi-select: pass a table as `Value`.
-
-`Search = false` hides the search box.
-
----
-
-### Keybind
-
-```lua
-local K = Page:Keybind({
-    Title    = "Toggle ESP",
-    Icon     = "keyboard",
-    Value    = Enum.KeyCode.F,
-    Callback = function(key) print(key.Name) end,
-    LockMessage = "Locked"
-})
-
-K:SetValue(Enum.KeyCode.G)
-K:GetValue()
-K:Lock()
-K:Unlock()
-K:Destroy()
-```
-
----
-
-### ColorPicker
-
-Popup with sat/val square, vertical hue bar, hex input, and RGB inputs.
-
-```lua
-local C = Page:ColorPicker({
-    Title    = "ESP Color",
-    Icon     = "palette",
-    Value    = Color3.fromRGB(255, 0, 127),
-    Callback = function(color) print(color) end,
-    LockMessage = "Locked"
-})
-
-C:SetValue("#00FF88")
-C:SetValue(Color3.fromRGB(0, 200, 100))
-C:GetValue()
-C:Lock()
-C:Unlock()
-C:Destroy()
-```
-
----
-
-### RightLabel
-
-```lua
-local L = Page:RightLabel({
-    Title = "Status",
-    Desc  = "Current state",
-    Icon  = "info",
-    Right = "Active"
-})
-
-L:SetTitle("Connection")
-L:SetRight("Online")
-L:Destroy()
-```
-
----
-
-### Banner
-
-```lua
-local B = Page:Banner("rbxassetid://12345")
-B:SetImage("https://example.com/banner.png")
-B:SetSize(UDim2.new(1,0,0,180))
-B:Destroy()
-```
-
----
-
-### ConfigManager
-
-Adds a full config manager section with a dropdown, name input, and action buttons.
-
-```lua
-Page:ConfigManager({
-    SectionTitle = "Config Manager",
-    AutoLoadKey  = "__myscript__",
-    OnLoad       = function(data)
-        if data.speed then SpeedSlider:SetValue(data.speed) end
-    end
-})
-```
-
-Buttons: Save (creates new, blocks duplicate names), Overwrite (updates existing), Load, Delete (with confirm dialog), Auto (sets auto-load on next run).
-
----
-
-## Notifications
-
-Rendered in a separate ScreenGui at DisplayOrder 999, always above the main UI.
-
-```lua
-Library:Notification({
-    Title    = "Success",
-    Desc     = "Done.",
-    Duration = 3,
-    Type     = "Success",
-    Icon     = "check-circle",
-    Color    = "#00FF88"
-})
-```
-
-`Type` accepts: `Info`, `Success`, `Warning`, `Error`.
-`Color` overrides the type color entirely.
-
----
-
-## Lock / Unlock
-
-Global lock disables all interactive elements:
-
+### Lock / Unlock
 ```lua
 Library:Lock()
 Library:Unlock()
 Library:IsLocked()
-Library:SetLockText("Cooldown active")
+Library:SetLockText("msg")
+```
+```
+Lock() overlays the entire UI. Nothing can be interacted with until Unlock() is called.
+SetLockText changes the text shown on the lock overlay.
+IsLocked() returns a bool.
 ```
 
-Per-element lock shows an overlay with custom text:
-
+### Misc
 ```lua
-Toggle:Lock("Premium required")
-Toggle:Unlock()
+Library:IsDropdownOpen()
+Library:Destroy()
+```
+
+### Notifications
+```lua
+Library:Notification({
+    Title    = "Title",
+    Desc     = "Body text",
+    Color    = "#FF007F",
+    Duration = 3,
+    Icon     = "rbxassetid://...",
+})
+```
+```
+1.) <String> Title of the notification. RichText supported.
+2.) <String> Body text. RichText supported.
+3.) <String> Accent color (hex or Color3). Used for the left bar, title color and progress bar.
+4.) <Number> How long the notification stays on screen in seconds.
+5.) <String> Optional icon shown next to the title.
+```
+
+---
+
+## Library.Exec
+
+Executor capability flags. All are booleans except name.
+```lua
+local Exec = Library.Exec
+
+Exec.name       -- Executor name string or "Unknown"
+Exec.clipboard  -- setclipboard is available
+Exec.readfile   -- readfile is available
+Exec.writefile  -- writefile is available
+Exec.listfiles  -- listfiles is available
+Exec.makefolder -- makefolder is available
+Exec.httpGet    -- HttpGet is available
+Exec.gethui     -- gethui is available
 ```
 
 ---
 
 ## Config System
 
-```lua
-local Cfg = Library.Config
+Every element with an `id` saves its value on every user change. When you call `Cfg:loadcfg()`, it pushes those saved values back into every registered element automatically.
 
-Cfg:Create("default", { speed=16 })
-Cfg:SetActive("default")
-Cfg:SetValue("speed", 100)
-Cfg:GetValue("speed")
-Cfg:Save("default")
-Cfg:Overwrite("default", { speed=200 })
-Cfg:Load("default")
-Cfg:Delete("default")
-Cfg:Rename("old", "new")
-Cfg:Duplicate("default", "preset1")
-Cfg:Import("name", jsonString)
-Cfg:Clear("default")
-Cfg:List()
-Cfg:Count()
-Cfg:Exists("default")
-Cfg:Active()
+```lua
+local Cfg = Library.Cfg
 ```
 
-`Create` returns `false, "Already exists"` if the name is taken.
+### Creating and Saving
+```lua
+Cfg:addcfg("main")
+Cfg:updcfg("main")
+```
+```
+addcfg: Creates a config slot. Does nothing if it already exists.
+updcfg: Writes the current value of every element to the config file.
+1.) <String> Config name.
+```
+
+### Loading
+```lua
+Cfg:loadcfg("main")
+```
+```
+1.) <String> Config name to load. Pushes saved values into all registered elements.
+Returns nil if the config doesn't exist.
+```
+
+### Deleting
+```lua
+Cfg:delcfg("main")
+```
+```
+1.) <String> Config name to delete.
+```
+
+### Getting All Configs
+```lua
+local list = Cfg:listcfg()
+```
+```
+Returns a sorted table of config name strings.
+```
+
+### Auto Load
+```lua
+Cfg:setautoload("main")
+Cfg:clearautoload()
+```
+```
+setautoload: Pins a config to load automatically on the next script run.
+clearautoload: Removes the pin.
+1.) <String> Config name to pin.
+```
+You can also handle auto-load via the Window arg:
+```lua
+AutoLoad = function(name, data)
+    print("Restored config:", name)
+end
+```
+
+### Manual Value Access
+```lua
+Cfg:setval("element_id", value)
+Cfg:getval("element_id")
+```
+```
+Usually not needed. Elements handle this themselves when they have an id.
+```
+
+### Import / Export
+```lua
+local json = Cfg:exportcfg("main")
+Cfg:importcfg("imported", json)
+```
+```
+exportcfg: Returns the config as a JSON string.
+importcfg: Creates a config from a JSON string.
+```
+
+### Other
+```lua
+Cfg:ActiveCfg()  -- name of the currently loaded config
+Cfg:GetFolder()  -- folder path on disk
+Cfg:Exists(name) -- returns bool
+```
 
 ---
 
-## Library Methods
-
-| Method | Description |
-|---|---|
-| `Library:SetTheme(table)` | Update theme colors at runtime |
-| `Library:GetTheme()` | Returns current theme table |
-| `Library:SetPillIcon(icon)` | Change floating pill icon |
-| `Library:SetExecutorIdentity(bool)` | Show/hide user info block |
-| `Library:SetTimeValue(string)` | Set header time text |
-| `Library:SetWindowTitle(string)` | Change window title |
-| `Library:SetWindowSubTitle(string)` | Change window subtitle |
-| `Library:AddSizeSlider(Page)` | Add a scale slider capped to screen |
-| `Library:Lock()` | Disable all interactions |
-| `Library:Unlock()` | Re-enable all interactions |
-| `Library:IsLocked()` | Returns locked state |
-| `Library:SetLockText(string)` | Change default lock overlay text |
-| `Library:Notification(Args)` | Show a toast notification |
-| `Library:Destroy()` | Destroy entire UI |
-
----
-
-## Icons
-
-`Library:Asset(icon)` resolves Lucide short names (`"settings"`), full names (`"lucide-star"`), numeric IDs, `rbxassetid://` strings, and `https://` URLs.
+## Creating Pages
+```lua
+local Page = Window:NewPage({
+    Title         = "Page",
+    Desc          = "Short description",
+    Icon          = "settings",
+    TabImage      = "rbxassetid://...",
+    TabImageColor = "#FF007F",
+})
+```
+```
+1.) <String> Page name shown on the tab.
+2.) <String> Small description shown below the name on the tab.
+3.) <String> Tab icon. Pass a Lucide name like "settings" or an rbxassetid string.
+4.) <String> Optional custom background image for the tab card.
+5.) <String> Tint color for the tab background image.
+```
 
 ---
 
-## ShowImage
+## Popups and Dialogs
+```lua
+Window:Popup({
+    Title   = "Title",
+    Desc    = "Body text",
+    Buttons = {
+        { Text="OK",     Style="main", Callback=function() end },
+        { Text="Cancel", Style="alt",  Callback=function() end },
+    },
+})
+```
+```
+Style "main" = accent colored button. Style "alt" = grey button.
+Click outside the popup to close it.
+```
 
 ```lua
-getgenv().ShowImage({
-    url      = "https://example.com/image.png",
-    size     = 500,
-    duration = 5
+Window:Dialog({
+    Title       = "Confirm",
+    Desc        = "Are you sure?",
+    ConfirmText = "Yes",
+    CancelText  = "No",
+    OnConfirm   = function() end,
+    OnCancel    = function() end,
 })
+```
+```
+Shorthand for a two-button confirm / cancel popup.
+```
+
+---
+
+## Page Elements
+
+Every element returns an object. All objects have:
+```
+:Destroy()         removes the element
+:SetVisible(bool)  hides or shows with no gap left behind
+:Lock(msg?)        shows a lock overlay on the element
+:Unlock()          removes the lock overlay
+```
+
+All title and description text fields support RichText: `<b>`, `<i>`, `<font color="rgb(...)">`.
+
+---
+
+## Section
+```lua
+local s = Page:Section("Section name")
+```
+```
+1.) <String> Section label text.
+```
+
+## Divider
+```lua
+local d = Page:Divider()
+```
+A horizontal line between elements.
+
+## Label
+```lua
+local l = Page:Label({ Title="Text", Desc="Sub text" })
+l:SetTitle("new title")
+l:SetDesc("new desc")
+```
+
+## RightLabel
+```lua
+local r = Page:RightLabel({ Title="Ping", Right="—" })
+r:SetRight("42 ms")
+r.Right = "42 ms"
+```
+```
+1.) Title = left side text.
+2.) Right = right side text. Update it with :SetRight() or r.Right =
+```
+
+## Paragraph
+```lua
+Page:Paragraph({
+    Title         = "Title",
+    Desc          = "Body text",
+    Image         = "rbxassetid://...",
+    ImageSize     = 18,
+    ImageMode     = "beside",
+    Thumbnail     = "https://...",
+    ThumbnailSize = 44,
+    Color         = "#1A1A1A",
+    Buttons       = { { Text="OK", Callback=function() end } },
+    LockMessage   = "msg",
+})
+```
+```
+Image: small icon shown beside or above the title.
+ImageMode: "beside" (default) or "top".
+Thumbnail: square image on the left side.
+Buttons: optional row of action buttons at the bottom.
+```
+
+## Button
+```lua
+local b = Page:Button({
+    Title       = "Row title",
+    Desc        = "Row description",
+    Text        = "Click me",
+    LockMessage = "msg",
+    Callback    = function() end,
+})
+b:SetText("new label")
+```
+
+## Toggle
+```lua
+local t = Page:Toggle({
+    Title        = "Feature name",
+    Desc         = "Description",
+    Value        = false,
+    id           = "unique_id",
+    CornerRadius = UDim.new(1, 0),
+    Icon         = "rbxassetid://...",
+    Enabled      = true,
+    LockMessage  = "msg",
+    Callback     = function(v) end,
+})
+t:SetValue(true)
+t:GetValue()
+t:SetIcon("rbxassetid://...")
+t:Enable()
+t:Disable()
+t:IsEnabled()
+t.Value = true
+```
+```
+id: enables auto save/load. The value is saved on every click.
+CornerRadius: controls the shape.
+  UDim.new(1,0) = circle
+  UDim.new(0,4) = rounded square
+  UDim.new(0,0) = sharp square
+Icon: custom checkmark image shown when the toggle is on.
+Enabled: false = greyed out and unclickable until :Enable() is called.
+```
+
+## Slider
+```lua
+local s = Page:Slider({
+    Title    = "Speed",
+    Desc     = "optional",
+    Min      = 0,
+    Max      = 100,
+    Value    = 50,
+    Rounding = 1,
+    Suffix   = "%",
+    id       = "unique_id",
+    Callback = function(v) end,
+})
+s:SetValue(75)
+s:GetValue()
+s:SetMin(0)
+s:SetMax(200)
+s.Value = 75
+```
+```
+Rounding: decimal places. 0 = integer only.
+Suffix: text appended to the value display.
+```
+
+## Input
+```lua
+local i = Page:Input({
+    Title         = "Name",
+    Placeholder   = "...",
+    Value         = "",
+    ShowButton    = true,
+    ClearOnSubmit = false,
+    id            = "unique_id",
+    Callback      = function(v) end,
+})
+i:SetValue("text")
+i:GetValue()
+i:SetPlaceholder("...")
+```
+```
+ShowButton: shows a copy-to-clipboard icon on the right.
+ClearOnSubmit: clears the field after pressing Enter.
+Callback fires on focus lost or Enter.
+```
+
+## Dropdown
+```lua
+local d = Page:Dropdown({
+    Title    = "Pick one",
+    List     = { "A", "B", "C" },
+    Value    = "A",
+    id       = "unique_id",
+    Callback = function(v) end,
+})
+d:SetValue("B")
+d:GetValue()
+d:SetList({ "X", "Y" })
+d:AddList("Z")
+d:RemoveItem("X")
+d:Clear()
+d:Close()
+```
+```
+For multi-select, pass a table as Value: Value = {"A", "B"}
+The callback receives the selected string (single) or table (multi).
+```
+
+## Keybind
+```lua
+local k = Page:Keybind({
+    Title    = "Name",
+    Desc     = "optional",
+    Value    = Enum.KeyCode.F,
+    id       = "unique_id",
+    Callback = function(k) end,
+})
+k:SetValue(Enum.KeyCode.G)
+k:GetValue()
+```
+```
+Click the keybind row to enter listen mode, then press any key to bind it.
+The callback fires both when a new key is set and every time that key is pressed.
+```
+
+## Progress
+```lua
+local p = Page:Progress({
+    Title  = "Health",
+    Value  = 80,
+    Max    = 100,
+    Suffix = " hp",
+    Color  = "#50C864",
+})
+p:SetValue(50)
+p:GetValue()
+p:SetColor("#DC3232")
+p:SetTitle("new label")
+```
+```
+Color: optional, defaults to the theme accent.
+```
+
+## MultiButton
+```lua
+Page:MultiButton({
+    Title   = "optional title",
+    Buttons = {
+        { Text="A",             Callback=function() end },
+        { Text="B", Color="#0088FF", Callback=function() end },
+    },
+})
+```
+```
+Buttons share the full width equally.
+Two buttons = 50% each. Four buttons = 25% each.
+Color overrides the accent color for individual buttons.
+```
+
+## Banner
+```lua
+local b = Page:Banner("rbxassetid://...")
+local b = Page:Banner({ Image="rbxassetid://...", Height=180 })
+b:SetImage("rbxassetid://...")
+b:SetSize(UDim2.new(1, 0, 0, 200))
+```
+```
+Full-width image. Supports static images and GIFs.
+Height defaults to 180 if not specified.
+```
+
+---
+
+## Lucide Icons
+
+Pass any Lucide icon name as a plain string to any `Icon` field.
+```
+settings       sliders        save           type
+layout         toggle-left    chevron-down   crosshair
+zap            person-standing
+```
+Icons are loaded on startup. They will not work if `HttpGet` is unavailable.
+
+---
+
+## RichText
+
+Supported anywhere in Title or Desc fields.
+```
+<b>bold</b>
+<i>italic</i>
+<font color="rgb(255, 0, 127)">colored</font>
+<font size="14">custom size</font>
+<stroke color="rgb(0,0,0)" thickness="1">stroke</stroke>
 ```
